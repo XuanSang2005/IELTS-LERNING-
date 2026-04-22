@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Polaroid</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; padding: 24px; background: var(--ivory); display: flex; gap: 28px; justify-content: center; align-items: center; }
+  .wrap { position: relative; width: 180px; }
+  .wrap.a { transform: rotate(-4deg); }
+  .wrap.b { transform: rotate(3deg); }
+  .back { position: absolute; inset: 0; background: var(--ink-warm); transform: translate(6px, 6px); }
+  .frame { position: relative; background: #F2EDE0; padding: 10px 10px 48px; box-shadow: var(--shadow-photo); }
+  .photo { aspect-ratio: 4/5; background: var(--claret); overflow: hidden; }
+  .photo img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; filter: grayscale(0.9) sepia(0.3) contrast(1.18) brightness(1.05); }
+  .photo.sage { background: var(--sage); }
+  .cap { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); background: var(--claret); padding: 5px 14px; white-space: nowrap; }
+  .cap .inner { position: absolute; inset: 3px; border: 1px solid rgba(181,138,60,0.6); }
+  .cap .txt { position: relative; font-family: var(--font-mono); color: var(--ivory); text-transform: uppercase; letter-spacing: 0.25em; font-size: 9px; }
+</style>
+</head>
+<body>
+  <div class="wrap a">
+    <div class="back"></div>
+    <div class="frame">
+      <div class="photo"><img src="../assets/edition-01.jpg" alt=""></div>
+      <div class="cap"><span class="inner"></span><span class="txt">Edition № I</span></div>
+    </div>
+  </div>
+  <div class="wrap b">
+    <div class="back"></div>
+    <div class="frame">
+      <div class="photo sage"><img src="../assets/edition-03.jpg" alt=""></div>
+      <div class="cap"><span class="inner"></span><span class="txt">Edition № II</span></div>
+    </div>
+  </div>
+</body>
+</html>

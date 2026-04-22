@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hero — Attractive variant</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; padding: 0; background: var(--ivory); font-family: var(--font-body); color: var(--ink); }
+  .mast { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 8px 24px; display: flex; justify-content: space-between; gap: 16px; font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.28em; color: var(--graphite); flex-wrap: wrap; }
+  .mast .v { color: var(--ink); letter-spacing: 0.22em; margin-left: 6px; }
+  .mast .d { color: var(--ochre); }
+  .wrap { padding: 22px 28px 16px; position: relative; }
+  .eye { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.25em; margin: 0; }
+  .eye .g { color: var(--graphite); }
+  .eye .c { color: var(--claret); }
+  h1 { font-family: var(--font-display); font-weight: 400; font-size: 44px; line-height: 0.92; letter-spacing: -0.025em; margin: 14px 0 0; }
+  h1 .indent1 { display: block; padding-left: 12%; }
+  h1 .indent2 { display: block; padding-left: 24%; color: var(--graphite); font-style: italic; font-size: 0.58em; }
+  .italic { position: relative; font-style: italic; display: inline-block; }
+  .italic svg { position: absolute; left: 0; right: 0; bottom: -3px; width: 100%; height: 6px; }
+  .pull { margin-top: 20px; border-left: 2px solid var(--claret); padding-left: 12px; font-size: 12px; line-height: 1.55; color: var(--graphite); max-width: 360px; }
+  .pull b { color: var(--ink); font-weight: 400; }
+  .disc { margin-top: 18px; display: flex; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .disc div { flex: 1; padding: 8px 10px; display: flex; align-items: baseline; gap: 8px; border-right: 1px solid var(--line); }
+  .disc div:last-child { border-right: none; }
+  .disc .rn { font-family: var(--font-display); font-style: italic; font-size: 16px; color: var(--graphite); }
+  .disc .lb { font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.22em; color: var(--graphite); }
+  .disc .hot { background: rgba(107,31,26,0.05); }
+  .disc .hot .rn { color: var(--claret); }
+  .disc .hot .lb { color: var(--ink); }
+</style>
+</head>
+<body>
+  <div class="mast">
+    <span>Today<span class="v">FRI 17 APR</span></span><span class="d">◆</span>
+    <span>Issue<span class="v">№ 008</span></span><span class="d">◆</span>
+    <span>Vol.<span class="v">MMXXVI · II</span></span>
+  </div>
+  <div class="wrap">
+    <p class="eye"><span class="g">CH. 00 —</span> <span class="c">The programme</span></p>
+    <h1>
+      The quiet craft
+      <span class="indent1">of scoring</span>
+      <span class="italic">Band&nbsp;9,
+        <svg viewBox="0 0 200 10" preserveAspectRatio="none"><path d="M2,6 Q50,2 100,5 T198,4" stroke="#6B1F1A" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+      </span>
+      <span class="indent2">without the noise.</span>
+    </h1>
+    <div class="pull">A considered programme for Band 7.5+ candidates. <b>One cohort of fourteen. Twelve weeks.</b></div>
+    <div class="disc">
+      <div><span class="rn">I</span><span class="lb">Listening</span></div>
+      <div><span class="rn">II</span><span class="lb">Reading</span></div>
+      <div class="hot"><span class="rn">III</span><span class="lb">Writing</span></div>
+      <div><span class="rn">IV</span><span class="lb">Speaking</span></div>
+    </div>
+  </div>
+</body>
+</html>

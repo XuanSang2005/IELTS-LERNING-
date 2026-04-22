@@ -1,0 +1,42 @@
+@import 'tailwindcss';
+
+@theme {
+  /* App brand palette */
+  --color-brand-50: oklch(0.97 0.02 250);
+  --color-brand-500: oklch(0.62 0.18 250);
+  --color-brand-600: oklch(0.55 0.2 250);
+  --color-brand-700: oklch(0.48 0.2 250);
+  --color-brand-dark: oklch(0.32 0.08 250);
+  --color-brand-accent: oklch(0.74 0.14 145);
+
+  /* Editorial / Meridian palette */
+  --color-ivory: #F6F1E7;
+  --color-bone: #EEE7D8;
+  --color-ink: #141210;
+  --color-graphite: #4A463E;
+  --color-claret: #6B1F1A;
+  --color-line: #C9BFA8;
+  --color-ochre: #B58A3C;
+  --color-sage: #6B7F5A;
+  --color-ink-warm: #2A2622;
+
+  /* Editorial font families */
+  --font-fraunces: 'Fraunces', Georgia, serif;
+  --font-geist: 'Geist', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-geist);
+  background-color: var(--color-ivory);
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 0.10 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 220px 220px;
+  background-repeat: repeat;
+  color: var(--color-ink);
+}

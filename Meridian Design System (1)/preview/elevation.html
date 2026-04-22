@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Elevation & Radii</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; padding: 28px; background: var(--ivory); display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .card { background: var(--bone); border: 1px solid var(--line); padding: 16px 14px; min-height: 110px; display: flex; flex-direction: column; justify-content: space-between; }
+  .soft { box-shadow: var(--shadow-soft); }
+  .full { box-shadow: var(--shadow-card); }
+  .hover { box-shadow: var(--shadow-hover); }
+  .label { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.22em; font-size: 10px; color: var(--graphite); }
+  .val { font-family: var(--font-display); font-style: italic; font-size: 14px; color: var(--ink); line-height: 1.3; margin-top: 6px; }
+  .note { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--claret); }
+</style>
+</head>
+<body>
+  <div class="card soft">
+    <div class="label">Soft</div>
+    <div>
+      <div class="val">Polaroids, gentle cards.</div>
+      <div class="note">0 18 38 -14 · claret 22%</div>
+    </div>
+  </div>
+  <div class="card full">
+    <div class="label">Card</div>
+    <div>
+      <div class="val">Specimen & feature panels.</div>
+      <div class="note">0 30 60 -30 · ink 25%</div>
+    </div>
+  </div>
+  <div class="card hover">
+    <div class="label">Hover</div>
+    <div>
+      <div class="val">Lifted button state.</div>
+      <div class="note">0 10 25 -8 · claret 35%</div>
+    </div>
+  </div>
+</body>
+</html>

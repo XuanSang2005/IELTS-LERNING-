@@ -1,0 +1,27 @@
+{
+  "name": "ielts-learning",
+  "version": "0.0.0",
+  "private": true,
+  "description": "IELTS learning web app — frontend (React) + backend (NestJS) monorepo",
+  "scripts": {
+    "prepare": "husky",
+    "lint-staged": "lint-staged",
+    "format": "prettier --write \"shared/**/*.{ts,json,md}\" && npm --prefix frontend run format && npm --prefix backend run format",
+    "format:check": "prettier --check \"shared/**/*.{ts,json,md}\" \"*.{json,md}\"",
+    "lint": "npm --prefix frontend run lint && npm --prefix backend run lint",
+    "lint:fix": "npm --prefix frontend run lint:fix && npm --prefix backend run lint:fix",
+    "typecheck": "npm --prefix frontend run typecheck && npm --prefix backend run build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "eslint": "^9.39.4",
+    "globals": "^17.4.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.3",
+    "typescript-eslint": "^8.58.0"
+  },
+  "dependencies": {
+    "zod": "^4.3.6"
+  }
+}

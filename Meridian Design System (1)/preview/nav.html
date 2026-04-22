@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Nav</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; padding: 0; background: var(--ivory); }
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 32px; border-bottom: 1px solid transparent; }
+  .mark { position: relative; }
+  .word { font-family: var(--font-display); font-weight: 500; font-size: 28px; line-height: 1; }
+  .word .c { color: var(--claret); } .word .k { color: var(--ink); }
+  .sub { position: absolute; top: 100%; left: 0; margin-top: 4px; font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.25em; color: var(--graphite); white-space: nowrap; }
+  .links { display: flex; gap: 32px; }
+  .link { font-family: var(--font-body); font-size: 16px; color: var(--ink); text-decoration: none; position: relative; }
+  .link.active { color: var(--claret); }
+  .link.active::after { content:''; position:absolute; left:0; right:0; bottom:-4px; height:2px; background: var(--claret); }
+  .auth { display: flex; gap: 22px; align-items: center; }
+  .lg { font-family: var(--font-body); font-size: 15px; color: var(--ink); text-decoration: none; }
+  .su { font-family: var(--font-body); font-size: 14px; color: var(--ink); text-decoration: none; border: 1px solid var(--ink); padding: 8px 18px; }
+</style>
+</head>
+<body>
+  <nav>
+    <div class="mark"><div class="word"><span class="c">M</span><span class="k">eridian</span></div><div class="sub">IELTS · EST. MMXXIV</div></div>
+    <div class="links">
+      <a class="link active" href="#">Programme</a>
+      <a class="link" href="#">Method</a>
+      <a class="link" href="#">Stories</a>
+      <a class="link" href="#">Journal</a>
+    </div>
+    <div class="auth"><a class="lg" href="#">Log in</a><a class="su" href="#">Sign up</a></div>
+  </nav>
+</body>
+</html>

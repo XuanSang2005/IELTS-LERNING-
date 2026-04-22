@@ -1,0 +1,84 @@
+{
+  // ── Format on save ─────────────────────────────────────────────
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // Run ESLint --fix on save (covers things Prettier doesn't, e.g. unused
+  // imports, react-hooks rules). Source.fixAll.eslint runs BEFORE the
+  // Prettier formatter so the result is already lint-clean.
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // ── Per-language formatter (defensive — overrides any other setting) ──
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // ── Prettier ───────────────────────────────────────────────────
+  // Resolve the local prettier binary (frontend or backend) instead of the
+  // bundled one, so VSCode formats with the exact version pinned in the repo.
+  "prettier.requireConfig": true,
+  "prettier.useEditorConfig": false,
+
+  // ── ESLint ─────────────────────────────────────────────────────
+  // The flat config (eslint.config.js / .mjs) lives in each workspace root.
+  // Tell ESLint where each one is.
+  "eslint.useFlatConfig": true,
+  "eslint.workingDirectories": [
+    { "pattern": "frontend" },
+    { "pattern": "backend" },
+    { "pattern": "." }
+  ],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "eslint.run": "onType",
+
+  // ── Editor niceties ────────────────────────────────────────────
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "typescript.tsdk": "frontend/node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+
+  // Keep the explorer tidy
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.tanstack": true,
+    "**/coverage": true
+  }
+}

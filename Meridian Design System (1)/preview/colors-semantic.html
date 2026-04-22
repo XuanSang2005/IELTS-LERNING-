@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Colors — Semantic Pairings</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; padding: 24px; background: var(--ivory); }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .pair { border: 1px solid var(--line); padding: 18px 16px; min-height: 96px; display: flex; flex-direction: column; justify-content: space-between; }
+  .label { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.22em; font-size: 10px; color: var(--graphite); }
+  .example { font-family: var(--font-display); font-size: 22px; line-height: 1.15; }
+  em { font-style: italic; }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <div class="pair" style="background:#F6F1E7; color:#141210;">
+      <div class="label">Ivory on Ink</div>
+      <div class="example">Primary text — <em>default</em>.</div>
+    </div>
+    <div class="pair" style="background:#EEE7D8; color:#4A463E;">
+      <div class="label">Bone on Graphite</div>
+      <div class="example">Secondary surfaces.</div>
+    </div>
+    <div class="pair" style="background:#2A2622; color:#F6F1E7;">
+      <div class="label" style="color:#C9BFA8;">Ink-warm on Ivory</div>
+      <div class="example">Button fill. <span style="color:#6B1F1A;">→</span></div>
+    </div>
+  </div>
+</body>
+</html>

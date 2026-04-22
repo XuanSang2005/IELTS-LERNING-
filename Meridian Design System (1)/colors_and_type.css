@@ -1,0 +1,216 @@
+/* ============================================================
+   Meridian Design System — Colors & Type
+   Editorial IELTS preparation. Cambridge booklet meets
+   The Gentlewoman. Quiet confidence, never SaaS.
+   ============================================================ */
+
+/* ---------- Fonts (Google Fonts CDN) ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Geist:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* ---------- Brand palette ---------- */
+  /* Warm paper — the canvas. Never pure white, never grey. */
+  --ivory: #F6F1E7;          /* default background */
+  --bone:  #EEE7D8;          /* secondary surfaces, subtle sections */
+
+  /* Ink — warm near-black, never pure #000 */
+  --ink:       #141210;      /* primary text */
+  --ink-warm:  #2A2622;      /* button fills; softer than ink */
+  --graphite:  #4A463E;      /* secondary text */
+
+  /* Accents — saturated, reserved for emphasis */
+  --claret: #6B1F1A;         /* THE accent. 3–5 times per page max. */
+  --sage:   #6B7F5A;         /* tertiary green */
+  --ochre:  #B58A3C;         /* tertiary amber (ribbons, rosettes) */
+
+  /* Structural */
+  --line: #C9BFA8;           /* hairline dividers, card borders */
+
+  /* Semantic — all derived from above, no new hues */
+  --fg-1: var(--ink);
+  --fg-2: var(--graphite);
+  --fg-muted: #6E685D;
+  --fg-inverse: var(--ivory);
+  --fg-accent: var(--claret);
+
+  --bg-1: var(--ivory);
+  --bg-2: var(--bone);
+  --bg-inverse: var(--ink-warm);
+
+  --border-hairline: var(--line);
+  --border-strong: var(--ink);
+
+  /* Functional (used sparingly; all in-palette) */
+  --ok: var(--sage);
+  --warn: var(--ochre);
+  --error: var(--claret);
+
+  /* ---------- Type families ---------- */
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-body:    'Geist', system-ui, -apple-system, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+
+  /* ---------- Type scale ---------- */
+  /* Display — Fraunces, leading-[0.95], -0.02em, italicize one word */
+  --fs-display-xl: clamp(44px, 6vw, 88px);
+  --fs-display-l:  clamp(40px, 5.4vw, 80px);
+  --fs-display-m:  clamp(36px, 4vw, 60px);
+  --fs-display-s:  clamp(28px, 3vw, 42px);
+
+  /* Body — Geist 400/500 */
+  --fs-body-l: 19px;         /* lead / hero subhead */
+  --fs-body-m: 16px;         /* default prose */
+  --fs-body-s: 14px;         /* captions, helper text */
+
+  /* Mono figure labels — always uppercase, 0.25em tracked */
+  --fs-mono-l: 12px;
+  --fs-mono-m: 11px;
+  --fs-mono-s: 10px;
+
+  /* Editorial body — Fraunces italic for quotes, sub-heads */
+  --fs-quote-l: clamp(19px, 1.5vw, 23px);
+  --fs-quote-m: 17px;
+
+  /* ---------- Spacing (no gamification; quiet editorial rhythm) ---------- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-14: 56px;
+  --sp-20: 80px;
+  --sp-32: 128px;
+
+  /* ---------- Radius (square or ≤2px — NEVER rounded-2xl) ---------- */
+  --radius-0: 0;
+  --radius-1: 2px;            /* the only allowed curve */
+
+  /* ---------- Shadow (claret-tinted, never black) ---------- */
+  --shadow-soft:   0 18px 38px -14px rgba(107, 31, 26, 0.22);
+  --shadow-card:   0 30px 60px -30px rgba(20, 18, 16, 0.25);
+  --shadow-hover:  0 10px 25px -8px rgba(107, 31, 26, 0.35);
+  --shadow-photo:  0 30px 60px -20px rgba(20, 18, 16, 0.35);
+
+  /* ---------- Motion ---------- */
+  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-short:  200ms;
+  --dur-medium: 300ms;
+  --dur-long:   700ms;
+
+  /* Paper grain noise (background overlay) */
+  --paper-grain: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.07 0 0 0 0 0.06 0 0 0 0.10 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* ---------- Base ---------- */
+html, body {
+  background: var(--ivory);
+  background-image: var(--paper-grain);
+  background-size: 220px 220px;
+  background-repeat: repeat;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--fs-body-m);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------- Semantic elements ---------- */
+h1, .h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-display-l);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+h2, .h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-display-m);
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+h3, .h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-display-s);
+  line-height: 1.05;
+  color: var(--ink);
+}
+
+p, .body {
+  font-family: var(--font-body);
+  font-size: var(--fs-body-m);
+  line-height: 1.6;
+  color: var(--graphite);
+  max-width: 62ch;
+}
+
+em, .italic {
+  font-style: italic;
+  font-weight: 400; /* Fraunces italic stays at 400 */
+}
+
+/* Mono figure label — the trademark editorial tag */
+.eyebrow, .fig-label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-m);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: var(--graphite);
+}
+.eyebrow--accent { color: var(--claret); }
+
+/* Editorial pull-quote */
+blockquote, .quote {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--fs-quote-l);
+  line-height: 1.4;
+  color: var(--ink);
+  border-left: 2px solid var(--claret);
+  padding-left: var(--sp-6);
+  max-width: 54ch;
+}
+
+code, kbd, pre, .mono {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono-m);
+  letter-spacing: 0.02em;
+}
+
+hr, .hairline {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: var(--sp-14) 0;
+}
+
+a.link {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  transition: border-color var(--dur-short) var(--ease-editorial);
+}
+a.link:hover { border-bottom-color: var(--ink); }
+
+/* Utility — hand-drawn underline under italicized word */
+.underline-claret {
+  position: relative;
+  display: inline-block;
+}
+.underline-claret::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  bottom: -4px;
+  height: 10px;
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 10' preserveAspectRatio='none'><path d='M2,6 Q50,2 100,5 T198,4' stroke='%236B1F1A' stroke-width='2.5' fill='none' stroke-linecap='round'/></svg>") no-repeat center / 100% 100%;
+}

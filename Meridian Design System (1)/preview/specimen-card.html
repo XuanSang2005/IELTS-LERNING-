@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Specimen Card</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; padding: 30px 32px; background: var(--ivory); display: flex; justify-content: center; align-items: center; min-height: 260px; }
+  .card { position: relative; width: 320px; transform: rotate(-1.5deg); border: 1px solid var(--line); background: var(--bone); padding: 22px; box-shadow: var(--shadow-card); }
+  .ribbon { position: absolute; top: -10px; right: -8px; transform: rotate(8deg); background: var(--claret); color: var(--ivory); padding: 3px 10px; font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.2em; }
+  .eye { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.25em; color: var(--graphite); }
+  .q { font-family: var(--font-display); font-style: italic; font-size: 16px; line-height: 1.35; color: var(--ink); margin: 14px 0; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; padding: 4px 0; }
+  .row + .row { border-top: 1px solid var(--line); }
+  .label { font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.22em; color: var(--graphite); }
+  .score { font-family: var(--font-display); font-size: 18px; color: var(--ink); }
+  .band { font-family: var(--font-display); font-size: 40px; color: var(--claret); line-height: 1; text-align: right; margin-top: 10px; }
+  .d { color: var(--ochre); font-size: 14px; margin-right: 6px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="ribbon">Intake № 01</div>
+    <div class="eye">Specimen № 004 / Writing</div>
+    <div class="q">"Some believe the quality of education is more important than its availability…"</div>
+    <div class="row"><span class="label">Task Response</span><span class="score">8.5</span></div>
+    <div class="row"><span class="label">Coherence</span><span class="score">9.0</span></div>
+    <div class="row"><span class="label">Lexical</span><span class="score">8.0</span></div>
+    <div class="row"><span class="label">Grammar</span><span class="score">8.5</span></div>
+    <div class="band"><span class="d">◆</span>Band 8.5</div>
+  </div>
+</body>
+</html>

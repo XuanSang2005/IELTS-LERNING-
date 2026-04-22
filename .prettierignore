@@ -1,0 +1,38 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Build output
+dist
+build
+**/dist
+**/build
+**/.tanstack
+backend/dist
+frontend/dist
+
+# Generated files (do not hand-format)
+**/routeTree.gen.ts
+
+# Lock files
+package-lock.json
+**/package-lock.json
+yarn.lock
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Editor / OS
+.DS_Store
+.vscode
+.idea
+
+# Misc
+.husky/_
+coverage
+**/coverage
