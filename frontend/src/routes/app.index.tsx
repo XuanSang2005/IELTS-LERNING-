@@ -99,11 +99,11 @@ function ChapterDivider({
   meta?: string
 }) {
   return (
-    <div className="relative pb-[18px] pt-9">
+    <div className="relative pb-10 pt-16">
       {/* stitched tape */}
       <div
         aria-hidden="true"
-        className="absolute left-1/2 top-7 flex h-7 w-[260px] -translate-x-1/2 -rotate-[1.4deg] items-center justify-center bg-claret"
+        className="absolute left-1/2 top-12 flex h-12 w-[300px] -translate-x-1/2 -rotate-[1.4deg] items-center justify-center bg-claret"
         style={{ boxShadow: '0 6px 12px -6px rgba(20,18,16,0.35)' }}
       >
         <span
@@ -115,7 +115,7 @@ function ChapterDivider({
           CHAPTER {numeral}
         </span>
       </div>
-      <div className="mt-11 flex items-baseline justify-between gap-4 border-b border-line pb-2.5">
+      <div className="mt-16 flex items-baseline justify-between gap-4 border-b border-line pb-2.5">
         <h3 className="m-0 font-fraunces text-[36px] font-normal italic leading-none text-ink">
           {title}
           <em className="text-claret">.</em>
@@ -531,10 +531,11 @@ function Dashboard() {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="mx-auto w-full max-w-[1720px] px-10 pb-20 pt-11"
+      className="w-full pb-20"
     >
       {/* ══════ Notebook header — editorial masthead ══════ */}
-      <header className="grid grid-cols-1 items-center gap-10 pb-12 pt-4 md:grid-cols-12 md:gap-14">
+      <header className="border-b-2 border-line">
+        <div className="mx-auto grid w-full max-w-[1720px] grid-cols-1 items-center gap-10 px-10 pb-16 pt-11 md:grid-cols-12 md:gap-14">
         <div className="md:col-span-7">
           <p className="m-0 font-mono text-[11px] uppercase tracking-[0.3em]">
             <span className="mr-2 text-claret">◆</span>
@@ -566,17 +567,16 @@ function Dashboard() {
             className="w-full max-w-[320px]"
           />
         </div>
+        </div>
       </header>
 
-      {/* Double hairline separator — matches the tests page */}
-      <div className="mt-10 border-t border-line" />
-      <div className="h-4 border-b border-line" />
-
       {/* ══════ Notebook chapters ══════ */}
-      {blueprint && <NotebookSession blueprint={blueprint} stepsDone={stepsDone} />}
-      <NotebookPhase profile={profile} />
-      <NotebookDisciplines profile={profile} />
-      <NotebookBand profile={profile} />
+      <div className="mx-auto w-full max-w-[1720px] px-10">
+        {blueprint && <NotebookSession blueprint={blueprint} stepsDone={stepsDone} />}
+        <NotebookPhase profile={profile} />
+        <NotebookDisciplines profile={profile} />
+        <NotebookBand profile={profile} />
+      </div>
     </motion.div>
   )
 }

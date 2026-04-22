@@ -82,12 +82,19 @@ function Postmark() {
 function PolaroidStack() {
   return (
     <div className="relative mx-auto w-full max-w-[440px]">
-      {/* Specimen card — primary, aligned to top of column */}
-      <FadeUp delay={0.55}>
-        <div className="relative z-10">
-          <SpecimenCard />
-        </div>
-      </FadeUp>
+      {/* Specimen card — primary, aligned to top of column.
+          `relative z-10` lives on the animated wrapper itself: the transform
+          animation creates its own stacking context, so a nested z-index
+          would only compete inside that context, not with the sibling
+          polaroids at the outer level. */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease, delay: 0.55 }}
+        className="relative z-10"
+      >
+        <SpecimenCard />
+      </motion.div>
 
       {/* Back polaroid — peeks behind upper-right of specimen, extends outward */}
       <motion.div
@@ -122,12 +129,16 @@ function PolaroidStack() {
         />
       </motion.div>
 
-      {/* Postmark pinned to specimen's top-left */}
-      <FadeUp delay={0.45}>
-        <div className="absolute -left-8 -top-8 z-20 hidden lg:block">
-          <Postmark />
-        </div>
-      </FadeUp>
+      {/* Postmark pinned to specimen's top-left. Same fix as the specimen:
+          `absolute … z-20` must live on the animated wrapper itself. */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease, delay: 0.45 }}
+        className="absolute -left-8 -top-8 z-20 hidden lg:block"
+      >
+        <Postmark />
+      </motion.div>
     </div>
   )
 }
@@ -149,7 +160,7 @@ const DISCIPLINES: Discipline[] = [
 
 function DisciplineStrip() {
   return (
-    <div className="mx-auto hidden w-full max-w-[1720px] px-4 pb-16 md:px-6 xl:px-8 2xl:block">
+    <div className="mx-auto hidden w-full max-w-[1720px] px-4 pb-16 md:px-6 xl:px-8 min-[1921px]:block">
       <ul className="flex flex-col border-y border-line md:flex-row">
         {DISCIPLINES.map((d, i) => (
           <li

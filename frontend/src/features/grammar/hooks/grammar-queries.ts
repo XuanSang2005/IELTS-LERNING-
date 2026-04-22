@@ -38,3 +38,26 @@ export function useLessonById(id: string | null) {
     staleTime: 10 * 60_000,
   })
 }
+
+export interface WeekLessonLookup {
+  summary: LessonSummary | null
+  isPublished: boolean
+}
+
+export function useWeekLesson(
+  week: number,
+  level?: BandLevel,
+): WeekLessonLookup & {
+  isPending: boolean
+  isError: boolean
+} {
+  const { data, isPending, isError } = useGrammarLessons({ week, level })
+  const summary =
+    data?.find((l) => l.week === week && (!level || l.level === level)) ?? null
+  return {
+    summary,
+    isPublished: Boolean(summary),
+    isPending,
+    isError,
+  }
+}

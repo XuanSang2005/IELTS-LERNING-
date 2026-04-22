@@ -10,6 +10,8 @@ import { TestsModule } from './tests/tests.module'
 import { TestSubmissionsModule } from './test-submissions/test-submissions.module'
 import { LessonsModule } from './lessons/lessons.module'
 import { VocabularyModule } from './vocabulary/vocabulary.module'
+import { PaymentsModule } from './payments/payments.module'
+import { PricingModule } from './pricing/pricing.module'
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { VocabularyModule } from './vocabulary/vocabulary.module'
     TestSubmissionsModule,
     LessonsModule,
     VocabularyModule,
+    PaymentsModule,
+    PricingModule,
   ],
   controllers: [AppController],
 })

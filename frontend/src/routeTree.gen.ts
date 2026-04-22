@@ -13,23 +13,26 @@ import { Route as TestsRouteImport } from './routes/tests'
 import { Route as StudyRouteImport } from './routes/study'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as MethodRouteImport } from './routes/method'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as AtlasRouteImport } from './routes/atlas'
 import { Route as AppRouteImport } from './routes/app'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TestsIndexRouteImport } from './routes/tests.index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as TestsTestIdRouteImport } from './routes/tests.$testId'
+import { Route as PayPaymentIdRouteImport } from './routes/pay.$paymentId'
 import { Route as OnboardingBandRouteImport } from './routes/onboarding.band'
 import { Route as AppVocabularyRouteImport } from './routes/app.vocabulary'
 import { Route as AppSessionRouteImport } from './routes/app.session'
-import { Route as AppNotebookRouteImport } from './routes/app.notebook'
 import { Route as AppGrammarRouteImport } from './routes/app.grammar'
 import { Route as TestsTestIdIndexRouteImport } from './routes/tests.$testId.index'
 import { Route as AppSessionIndexRouteImport } from './routes/app.session.index'
+import { Route as AppGrammarIndexRouteImport } from './routes/app.grammar.index'
 import { Route as TestsTestIdResultsRouteImport } from './routes/tests.$testId.results'
 import { Route as AppSessionCompleteRouteImport } from './routes/app.session.complete'
+import { Route as AppGrammarWeekRouteImport } from './routes/app.grammar.$week'
 
 const TestsRoute = TestsRouteImport.update({
   id: '/tests',
@@ -51,6 +54,11 @@ const ProfileRoute = ProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MethodRoute = MethodRouteImport.update({
   id: '/method',
   path: '/method',
@@ -61,14 +69,14 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AtlasRoute = AtlasRouteImport.update({
+  id: '/atlas',
+  path: '/atlas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -91,6 +99,11 @@ const TestsTestIdRoute = TestsTestIdRouteImport.update({
   path: '/$testId',
   getParentRoute: () => TestsRoute,
 } as any)
+const PayPaymentIdRoute = PayPaymentIdRouteImport.update({
+  id: '/pay/$paymentId',
+  path: '/pay/$paymentId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingBandRoute = OnboardingBandRouteImport.update({
   id: '/onboarding/band',
   path: '/onboarding/band',
@@ -104,11 +117,6 @@ const AppVocabularyRoute = AppVocabularyRouteImport.update({
 const AppSessionRoute = AppSessionRouteImport.update({
   id: '/session',
   path: '/session',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppNotebookRoute = AppNotebookRouteImport.update({
-  id: '/notebook',
-  path: '/notebook',
   getParentRoute: () => AppRoute,
 } as any)
 const AppGrammarRoute = AppGrammarRouteImport.update({
@@ -126,6 +134,11 @@ const AppSessionIndexRoute = AppSessionIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppSessionRoute,
 } as any)
+const AppGrammarIndexRoute = AppGrammarIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppGrammarRoute,
+} as any)
 const TestsTestIdResultsRoute = TestsTestIdResultsRouteImport.update({
   id: '/results',
   path: '/results',
@@ -136,70 +149,83 @@ const AppSessionCompleteRoute = AppSessionCompleteRouteImport.update({
   path: '/complete',
   getParentRoute: () => AppSessionRoute,
 } as any)
+const AppGrammarWeekRoute = AppGrammarWeekRouteImport.update({
+  id: '/$week',
+  path: '/$week',
+  getParentRoute: () => AppGrammarRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/app': typeof AppRouteWithChildren
+  '/atlas': typeof AtlasRoute
   '/login': typeof LoginRoute
   '/method': typeof MethodRoute
+  '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/study': typeof StudyRoute
   '/tests': typeof TestsRouteWithChildren
-  '/app/grammar': typeof AppGrammarRoute
-  '/app/notebook': typeof AppNotebookRoute
+  '/app/grammar': typeof AppGrammarRouteWithChildren
   '/app/session': typeof AppSessionRouteWithChildren
   '/app/vocabulary': typeof AppVocabularyRoute
   '/onboarding/band': typeof OnboardingBandRoute
+  '/pay/$paymentId': typeof PayPaymentIdRoute
   '/tests/$testId': typeof TestsTestIdRouteWithChildren
   '/app/': typeof AppIndexRoute
   '/tests/': typeof TestsIndexRoute
+  '/app/grammar/$week': typeof AppGrammarWeekRoute
   '/app/session/complete': typeof AppSessionCompleteRoute
   '/tests/$testId/results': typeof TestsTestIdResultsRoute
+  '/app/grammar/': typeof AppGrammarIndexRoute
   '/app/session/': typeof AppSessionIndexRoute
   '/tests/$testId/': typeof TestsTestIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/atlas': typeof AtlasRoute
   '/login': typeof LoginRoute
   '/method': typeof MethodRoute
+  '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/study': typeof StudyRoute
-  '/app/grammar': typeof AppGrammarRoute
-  '/app/notebook': typeof AppNotebookRoute
   '/app/vocabulary': typeof AppVocabularyRoute
   '/onboarding/band': typeof OnboardingBandRoute
+  '/pay/$paymentId': typeof PayPaymentIdRoute
   '/app': typeof AppIndexRoute
   '/tests': typeof TestsIndexRoute
+  '/app/grammar/$week': typeof AppGrammarWeekRoute
   '/app/session/complete': typeof AppSessionCompleteRoute
   '/tests/$testId/results': typeof TestsTestIdResultsRoute
+  '/app/grammar': typeof AppGrammarIndexRoute
   '/app/session': typeof AppSessionIndexRoute
   '/tests/$testId': typeof TestsTestIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/app': typeof AppRouteWithChildren
+  '/atlas': typeof AtlasRoute
   '/login': typeof LoginRoute
   '/method': typeof MethodRoute
+  '/pricing': typeof PricingRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/study': typeof StudyRoute
   '/tests': typeof TestsRouteWithChildren
-  '/app/grammar': typeof AppGrammarRoute
-  '/app/notebook': typeof AppNotebookRoute
+  '/app/grammar': typeof AppGrammarRouteWithChildren
   '/app/session': typeof AppSessionRouteWithChildren
   '/app/vocabulary': typeof AppVocabularyRoute
   '/onboarding/band': typeof OnboardingBandRoute
+  '/pay/$paymentId': typeof PayPaymentIdRoute
   '/tests/$testId': typeof TestsTestIdRouteWithChildren
   '/app/': typeof AppIndexRoute
   '/tests/': typeof TestsIndexRoute
+  '/app/grammar/$week': typeof AppGrammarWeekRoute
   '/app/session/complete': typeof AppSessionCompleteRoute
   '/tests/$testId/results': typeof TestsTestIdResultsRoute
+  '/app/grammar/': typeof AppGrammarIndexRoute
   '/app/session/': typeof AppSessionIndexRoute
   '/tests/$testId/': typeof TestsTestIdIndexRoute
 }
@@ -207,81 +233,91 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/about'
     | '/app'
+    | '/atlas'
     | '/login'
     | '/method'
+    | '/pricing'
     | '/profile'
     | '/signup'
     | '/study'
     | '/tests'
     | '/app/grammar'
-    | '/app/notebook'
     | '/app/session'
     | '/app/vocabulary'
     | '/onboarding/band'
+    | '/pay/$paymentId'
     | '/tests/$testId'
     | '/app/'
     | '/tests/'
+    | '/app/grammar/$week'
     | '/app/session/complete'
     | '/tests/$testId/results'
+    | '/app/grammar/'
     | '/app/session/'
     | '/tests/$testId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/about'
+    | '/atlas'
     | '/login'
     | '/method'
+    | '/pricing'
     | '/profile'
     | '/signup'
     | '/study'
-    | '/app/grammar'
-    | '/app/notebook'
     | '/app/vocabulary'
     | '/onboarding/band'
+    | '/pay/$paymentId'
     | '/app'
     | '/tests'
+    | '/app/grammar/$week'
     | '/app/session/complete'
     | '/tests/$testId/results'
+    | '/app/grammar'
     | '/app/session'
     | '/tests/$testId'
   id:
     | '__root__'
     | '/'
-    | '/about'
     | '/app'
+    | '/atlas'
     | '/login'
     | '/method'
+    | '/pricing'
     | '/profile'
     | '/signup'
     | '/study'
     | '/tests'
     | '/app/grammar'
-    | '/app/notebook'
     | '/app/session'
     | '/app/vocabulary'
     | '/onboarding/band'
+    | '/pay/$paymentId'
     | '/tests/$testId'
     | '/app/'
     | '/tests/'
+    | '/app/grammar/$week'
     | '/app/session/complete'
     | '/tests/$testId/results'
+    | '/app/grammar/'
     | '/app/session/'
     | '/tests/$testId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
   AppRoute: typeof AppRouteWithChildren
+  AtlasRoute: typeof AtlasRoute
   LoginRoute: typeof LoginRoute
   MethodRoute: typeof MethodRoute
+  PricingRoute: typeof PricingRoute
   ProfileRoute: typeof ProfileRoute
   SignupRoute: typeof SignupRoute
   StudyRoute: typeof StudyRoute
   TestsRoute: typeof TestsRouteWithChildren
   OnboardingBandRoute: typeof OnboardingBandRoute
+  PayPaymentIdRoute: typeof PayPaymentIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -314,6 +350,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/method': {
       id: '/method'
       path: '/method'
@@ -328,18 +371,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/atlas': {
+      id: '/atlas'
+      path: '/atlas'
+      fullPath: '/atlas'
+      preLoaderRoute: typeof AtlasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app': {
       id: '/app'
       path: '/app'
       fullPath: '/app'
       preLoaderRoute: typeof AppRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -370,6 +413,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TestsTestIdRouteImport
       parentRoute: typeof TestsRoute
     }
+    '/pay/$paymentId': {
+      id: '/pay/$paymentId'
+      path: '/pay/$paymentId'
+      fullPath: '/pay/$paymentId'
+      preLoaderRoute: typeof PayPaymentIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding/band': {
       id: '/onboarding/band'
       path: '/onboarding/band'
@@ -389,13 +439,6 @@ declare module '@tanstack/react-router' {
       path: '/session'
       fullPath: '/app/session'
       preLoaderRoute: typeof AppSessionRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/notebook': {
-      id: '/app/notebook'
-      path: '/notebook'
-      fullPath: '/app/notebook'
-      preLoaderRoute: typeof AppNotebookRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/grammar': {
@@ -419,6 +462,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSessionIndexRouteImport
       parentRoute: typeof AppSessionRoute
     }
+    '/app/grammar/': {
+      id: '/app/grammar/'
+      path: '/'
+      fullPath: '/app/grammar/'
+      preLoaderRoute: typeof AppGrammarIndexRouteImport
+      parentRoute: typeof AppGrammarRoute
+    }
     '/tests/$testId/results': {
       id: '/tests/$testId/results'
       path: '/results'
@@ -433,8 +483,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSessionCompleteRouteImport
       parentRoute: typeof AppSessionRoute
     }
+    '/app/grammar/$week': {
+      id: '/app/grammar/$week'
+      path: '/$week'
+      fullPath: '/app/grammar/$week'
+      preLoaderRoute: typeof AppGrammarWeekRouteImport
+      parentRoute: typeof AppGrammarRoute
+    }
   }
 }
+
+interface AppGrammarRouteChildren {
+  AppGrammarWeekRoute: typeof AppGrammarWeekRoute
+  AppGrammarIndexRoute: typeof AppGrammarIndexRoute
+}
+
+const AppGrammarRouteChildren: AppGrammarRouteChildren = {
+  AppGrammarWeekRoute: AppGrammarWeekRoute,
+  AppGrammarIndexRoute: AppGrammarIndexRoute,
+}
+
+const AppGrammarRouteWithChildren = AppGrammarRoute._addFileChildren(
+  AppGrammarRouteChildren,
+)
 
 interface AppSessionRouteChildren {
   AppSessionCompleteRoute: typeof AppSessionCompleteRoute
@@ -451,16 +522,14 @@ const AppSessionRouteWithChildren = AppSessionRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
-  AppGrammarRoute: typeof AppGrammarRoute
-  AppNotebookRoute: typeof AppNotebookRoute
+  AppGrammarRoute: typeof AppGrammarRouteWithChildren
   AppSessionRoute: typeof AppSessionRouteWithChildren
   AppVocabularyRoute: typeof AppVocabularyRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppGrammarRoute: AppGrammarRoute,
-  AppNotebookRoute: AppNotebookRoute,
+  AppGrammarRoute: AppGrammarRouteWithChildren,
   AppSessionRoute: AppSessionRouteWithChildren,
   AppVocabularyRoute: AppVocabularyRoute,
   AppIndexRoute: AppIndexRoute,
@@ -496,15 +565,17 @@ const TestsRouteWithChildren = TestsRoute._addFileChildren(TestsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
   AppRoute: AppRouteWithChildren,
+  AtlasRoute: AtlasRoute,
   LoginRoute: LoginRoute,
   MethodRoute: MethodRoute,
+  PricingRoute: PricingRoute,
   ProfileRoute: ProfileRoute,
   SignupRoute: SignupRoute,
   StudyRoute: StudyRoute,
   TestsRoute: TestsRouteWithChildren,
   OnboardingBandRoute: OnboardingBandRoute,
+  PayPaymentIdRoute: PayPaymentIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

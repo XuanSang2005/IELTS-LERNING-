@@ -3,8 +3,8 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import type { Skill, Test as TestShape } from '@shared/schemas/test'
 import { seedTests } from '@shared/seeds/tests'
-import { Test, TestDocument } from './schemas/test.schema'
-import { LISTENING_TEST, READING_TEST } from './tests.constants'
+import { TestDocument } from './schemas/test.schema'
+import { LISTENING_TEST, READING_TEST, SPEAKING_TEST, WRITING_TEST } from './tests.constants'
 
 function toShape(doc: TestDocument): TestShape {
   const obj = doc.toObject<TestDocument>()
@@ -35,30 +35,34 @@ export class TestsService implements OnModuleInit {
   private readonly logger = new Logger(TestsService.name)
 
   constructor(
-    // Default collection — holds writing + speaking tests.
-    @InjectModel(Test.name) private readonly testModel: Model<TestDocument>,
-    // Listening tests live in `listening_tests`.
     @InjectModel(LISTENING_TEST) private readonly listeningModel: Model<TestDocument>,
-    // Reading tests live in `reading_tests`.
     @InjectModel(READING_TEST) private readonly readingModel: Model<TestDocument>,
+    @InjectModel(WRITING_TEST) private readonly writingModel: Model<TestDocument>,
+    @InjectModel(SPEAKING_TEST) private readonly speakingModel: Model<TestDocument>,
   ) {}
 
-  /** Returns the correct model for a given skill. */
+  /** Returns the correct physical collection for a given skill. */
   private modelFor(skill: Skill): Model<TestDocument> {
-    if (skill === 'listening') return this.listeningModel
-    if (skill === 'reading') return this.readingModel
-    return this.testModel
+    switch (skill) {
+      case 'listening':
+        return this.listeningModel
+      case 'reading':
+        return this.readingModel
+      case 'writing':
+        return this.writingModel
+      case 'speaking':
+        return this.speakingModel
+    }
   }
 
-  /** All three models — used when skill is unknown. */
+  /** All four per-skill models — used when the skill filter is unknown. */
   private allModels(): Array<Model<TestDocument>> {
-    return [this.testModel, this.listeningModel, this.readingModel]
+    return [this.listeningModel, this.readingModel, this.writingModel, this.speakingModel]
   }
 
   async onModuleInit(): Promise<void> {
     // Idempotent seed: upsert each seed test by externalId into the right
-    // physical collection. Listening goes to `listening_tests`, reading goes
-    // to `reading_tests`, writing/speaking stay in `tests`.
+    // per-skill collection.
     let inserted = 0
     let updated = 0
     for (const t of seedTests) {

@@ -4,3 +4,5 @@
 // them via MongooseModule.forFeature).
 export const LISTENING_TEST = 'ListeningTest'
 export const READING_TEST = 'ReadingTest'
+export const WRITING_TEST = 'WritingTest'
+export const SPEAKING_TEST = 'SpeakingTest'

@@ -3,24 +3,15 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { LessonsController } from './lessons.controller'
 import { LessonsService } from './lessons.service'
 import { LessonMongooseSchema } from './schemas/lesson.schema'
-import {
-  COLLOCATIONS_LESSON,
-  GRAMMAR_LESSON,
-  LINKING_LESSON,
-  VOCABULARY_LESSON,
-} from './lessons.constants'
+import { GRAMMAR_LESSON } from './lessons.constants'
 
+// Grammar-only: vocabulary, collocations, and linking lesson collections were
+// removed because no frontend surface reads them. Add more registrations here
+// (and seed entries + pages) when those disciplines come online.
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: GRAMMAR_LESSON, schema: LessonMongooseSchema, collection: 'grammar_lessons' },
-      { name: VOCABULARY_LESSON, schema: LessonMongooseSchema, collection: 'vocabulary_lessons' },
-      {
-        name: COLLOCATIONS_LESSON,
-        schema: LessonMongooseSchema,
-        collection: 'collocations_lessons',
-      },
-      { name: LINKING_LESSON, schema: LessonMongooseSchema, collection: 'linking_lessons' },
     ]),
   ],
   controllers: [LessonsController],

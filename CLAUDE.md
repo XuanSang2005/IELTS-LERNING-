@@ -11,7 +11,8 @@ Guidance for Claude Code when working in this repository.
 The aesthetic is **editorial, not SaaS**. Think *The Gentlewoman* meets a Cambridge exam booklet. Aesop product pages. Kinfolk magazine. Quiet confidence. Every UI decision is filtered through this lens — if it looks like a typical SaaS dashboard, it's wrong.
 
 - `frontend/` — React SPA (Vite + TypeScript). Scaffolded ✅
-- `backend/` — NestJS + MongoDB API. Planned.
+- `backend/` — NestJS + MongoDB + JWT auth + Anthropic wrapper. Scaffolded ✅
+- `shared/schemas/` — Zod schemas imported by both sides via `@shared/*`
 
 Folder-based monorepo. Root `package.json` holds Git hooks only.
 
@@ -78,12 +79,13 @@ Pricing is **not yet locked**. Use these conventions in code:
 See [`techstack.md`](./techstack.md) for full details.
 
 - **Frontend:** Vite 8, React 19, TypeScript 6, Tailwind v4, TanStack Router/Query/Table/Form, Zod, Zustand, framer-motion, ESLint 9 flat, Prettier
-- **Backend (planned):** NestJS, MongoDB (Mongoose), Zod for DTOs, JWT auth, Anthropic Claude API
+- **Backend:** NestJS 11, MongoDB (Mongoose), Zod via `ZodValidationPipe`, JWT auth, `@anthropic-ai/sdk`, Casso webhook for VN bank-transfer payments
 - **Git hooks:** Husky v9 — pre-commit `lint-staged`; pre-push `typecheck`
 
 ## Commands
 
 ```bash
+# Frontend
 cd frontend
 npm run dev            # :5173 (auto tsr:generate first)
 npm run build          # tsr -> tsc -b -> vite build
@@ -92,6 +94,16 @@ npm run lint           # ESLint 9 flat
 npm run lint:fix
 npm run format
 npm run tsr:generate
+
+# Backend
+cd backend
+npm run start:dev      # :4000, watch mode
+npm run build          # nest build
+npm run lint
+npm run lint:fix
+npm run format
+# One-off reseed of grammar_lessons (wipe + insert all 48 lessons)
+npx ts-node -r tsconfig-paths/register scripts/reseed-lessons.ts
 ```
 
 ---
@@ -145,13 +157,67 @@ line:     #C9BFA8   — hairline dividers
 
 - **Fraunces** — display + headlines, italic axis for emphasis
 - **Geist** — body + UI, weights 400 + 500 only
-- **JetBrains Mono** — figure labels, always `uppercase + tracking-[0.25em] + 11px`
+- **JetBrains Mono** — figure labels, always `uppercase + tracking-[0.25em]`
 
 Rules:
 - Max 2 weights per font family visible at once
 - Headlines: `leading-[0.95]`, `-tracking-[0.02em]`, italicize ONE word
 - Headline scale: `text-[clamp(44px,6vw,88px)]`
 - Figure labels (`FIG. 01`, `CH. II`, `№ 003`, `PL. 07`) decorate sections, cards, images
+
+### Font-size scale (enforce on every new reader/session page)
+
+Follow this scale on any new grammar / vocabulary / practice / review page. Older screens scaled too small for 1920px displays — default to the md values below.
+
+**Section headers (mono):**
+- Listing-page eyebrow: `text-[11-12px] tracking-[0.28-0.3em]`
+- Reader section label (`§ II · THEORY` pattern): `text-[15px] md:text-[17px] tracking-[0.32em] font-semibold`
+- Small mono labels inside cards (`◆ FORMAL`, `◆ WHY`, `◆ EXAMPLE`): `text-[11-12px]` — do NOT drop to 9-10px; they become illegible at reading distance
+
+**Body prose (Geist):**
+- Reader prose: `text-[17px] md:text-[19px] leading-[1.85]`
+- Secondary note body: `text-[15px] md:text-[16px]`
+
+**Emphasis + quotes (Fraunces italic):**
+- Definition body / quoted example: `text-[19px] md:text-[22px]`
+- Card rule / directive: `text-[18px] md:text-[20px]`
+- Wrong/right mistake text: `text-[18px] md:text-[19px]`
+
+**Card headlines / prompts (Fraunces):**
+- Exercise prompt: `text-[22px] md:text-[26px]`
+- Flashcard front (review): `text-[30px] md:text-[40px]`
+- Lesson hook: `text-[24px] md:text-[30px]`
+- CTA headline: `text-[24px] md:text-[28px]`
+
+**Hero display:**
+- Page H1: `text-[clamp(44-52px,6vw,88px)]`
+- Chapter numeral (CH. I): `text-[64-80px]`
+- Score / count display: `text-[64px] md:text-[88px]`
+- Numbered-list numeral inside theory: `text-[32px] md:text-[38px]`
+
+**Formulas (Mono):**
+- Single rule: `text-[18px] md:text-[21px] leading-[1.75]`
+- Multi rule (split on `;`): `text-[17px] md:text-[20px]`
+- `+` operator (whitespace both sides): `text-[22px] md:text-[24px] font-bold text-claret`
+- Suffix chip (`+s`, `+ed`, `-ing`): `bg-claret/10 rounded-sm px-1 font-mono font-semibold text-claret` — same font-size as surrounding text, no special size
+
+**Inputs (practice / search):**
+- Bordered input: `text-[20px] md:text-[22px] font-fraunces italic` with `border-2 border-line focus:border-claret`
+- Choice option text: `text-[17px] md:text-[18px] font-geist`
+
+**Progress bars:** `h-2` (8px) filled, not `h-px` — too thin to see.
+
+### Layout max-widths (also enforce on every new page)
+
+- Listing page outer (tests, atlas, vocabulary, grammar roadmap): `max-w-[1720px]`
+- Reader/session outer (lesson, practice, review): `max-w-[1720px]`
+- Reader/session inner content (exercise body, flashcard row): `max-w-[1100px]`
+- Theory frame: `max-w-[900px]`
+- Reader prose column (hook, theory prose): `max-w-[60-68ch]` inside the frame
+- Centered masthead text block: `max-w-[920px]`
+- Flashcard inner text (review): `max-w-[800px]`
+
+Padding convention: `px-6 py-12 md:px-10 md:py-16 xl:px-14` on outer containers.
 
 ### Signature button
 
@@ -283,14 +349,27 @@ Users pick per session. Both tracked identically in progress.
 
 - **AI-drafted, founder-edited** (founder is Band 8.5, edits personally)
 - Target: 1 new lesson every 2-3 days (~120 lessons across 12 weeks, 4 disciplines)
-- Lesson template (AI drafts consistently → founder edits faster):
+- Lesson template (matches `LessonSchema` in `shared/schemas/lesson.ts`):
   1. Hook — why this matters for IELTS (2-3 sentences)
-  2. Theory — rule + explanation (150-200 words)
-  3. Examples — 3 at B1/B2/C1 registers
-  4. Common mistakes — 3 typical Vietnamese learner errors
-  5. Practice — 5 exercises with answer key
-  6. Extension — 1 Task 2 prompt using this language
-  7. Noticing prompt — items added to SRS queue
+  2. Theory — rule + explanation (150-200 words). Do NOT include full example sentences here — they belong in §III. Keep formulas crisp (`Label: body + more.`) so the Theory parser can extract them.
+  3. Examples — exactly 3, one each at B1/B2/C1 registers
+  4. Common mistakes — exactly 3 wrong/right/why triples, drawn from Vietnamese-learner errors
+  5. Practice — 3–8 exercises (gap-fill / rewrite / choice) with answer + optional explanation
+  6. Extension — 1 Task 2 prompt + `minWords`
+  7. Noticing — 3–7 items feeding the week's review flashcards
+
+### Grammar feature — the live reference arc
+
+`/app/grammar` is the canonical example of how a discipline is structured end-to-end. New disciplines (Vocabulary, Collocations, Linking) should follow the same skeleton.
+
+- **Four level arcs** — Foundation (B4.5–5.5), Intermediate (B5.5–6.5), Advanced (B6.5–7.5), Mastery (B7.5+). Each 12 weeks, one structure per week.
+- **State** — `useGrammarLevel` (persisted level choice) and `useGrammarProgress` (byLevel → byWeek → `{lessonRead, practiceScore, reviewPassed}`) in `frontend/src/stores/`.
+- **Schemas** — `shared/schemas/grammar-plan.ts` (stubs, phase descriptors) + `shared/schemas/lesson.ts` (full lesson shape).
+- **Routes** — `routes/app.grammar.tsx` is a layout with `<Outlet />`; `app.grammar.index.tsx` renders the roadmap; `app.grammar.$week.tsx` renders `<WeekPage>` with `?tab=lesson|practice|review` search param.
+- **Theory rendering** — `LessonReader` parses the theory paragraph into semantic blocks: `formula` (Label: body with `+`), `numberedList` (`Label: (1) …; (2) …`), `rule` (starts with Use/Never/Avoid/…), and `prose`. Formulas render as lifted ivory cards with keyword pills + oversized claret `+` operators. Inline `+s` / `+ed` / `-ing` suffixes render as small claret chips. Standalone example sentences in theory are auto-stripped to avoid duplicating §III.
+- **Level + progress keyed together** — changing level swaps the entire arc and the progress dots on roadmap tiles re-read from the new level's bucket. Legacy flat progress (pre-level) migrates under `intermediate` on first rehydrate.
+
+When adding a new discipline page, mirror this architecture: level selector → phases roadmap → week page (lesson/practice/review tabs) → session components.
 
 ---
 
@@ -346,12 +425,17 @@ features/<n>/
 
 ### Current features
 
-- `features/landing/` — marketing (Nav, Hero, SpecimenCard, TrustStrip, BackgroundOrnaments)
-- `features/study/` — `/study` catalog
-- `features/practice/` — `/app/*` student workspace
-- `features/auth/` — login/register (planned)
+- `features/landing/` ✅ — marketing (Nav, Hero, SpecimenCard, TrustStrip, BackgroundOrnaments)
+- `features/method/` ✅ — `/method` page
+- `features/study/` ✅ — `/study` catalog
+- `features/practice/` ✅ — `/app/*` student workspace (AppNav, sessions)
+- `features/auth/` ✅ — login + signup
+- `features/tests/` ✅ — listening / reading / writing / speaking practice tests
+- `features/grammar/` ✅ — `/app/grammar/*` 4-level arc (Foundation → Mastery), lesson/practice/review tabs
+- `features/vocabulary/` ✅ — `/app/vocabulary` reader
+- `features/atlas/` ✅ — `/atlas` editorial catalogue of Vietnamese-learner mistakes
+- `features/payment/` ✅ — `/pay/$paymentId` QR + bank-transfer flow (Casso webhook)
 - `features/diagnostic/` — onboarding placement test (planned)
-- `features/pricing/` — Pro upgrade paywall + subscription (planned)
 - `features/livestream/` — Friday session embed + archive (planned)
 
 ---
@@ -394,10 +478,11 @@ When persisting (localStorage, API, rehydrate):
 
 ### Anthropic Claude — primary AI provider
 
-- **Grading tasks:** `claude-sonnet-4-5-20250929` (cost/quality balance)
+- **Grading tasks:** `claude-sonnet-4-6` (cost/quality balance, current generation)
 - **Translation feature:** `claude-haiku-4-5-20251001` (cheap, fast)
 - **Never expose API key to frontend** — all calls through backend
 - Backend wraps Anthropic SDK, frontend calls `apiFetch('/api/grade/writing', ...)`
+- Update model IDs here whenever a new Claude generation is promoted to default — don't let them drift
 
 ### Use cases
 
@@ -420,22 +505,25 @@ When persisting (localStorage, API, rehydrate):
 ### MVP launch (test with friends first)
 
 1. ✅ Landing + Method + Study pages
-2. ✅ Practice feature (dashboard, daily loop, notebook, errors) — localStorage
-3. 🔨 Backend scaffold + auth + practice API
-4. Free vs Pro paywall logic
-5. AI Writing grading (Anthropic integration)
-6. AI Speaking grading
-7. Translation feature (per-phrase VN popover)
-8. Weekly livestream embed + archive
+2. ✅ Practice feature (dashboard, daily loop, notebook, errors)
+3. ✅ Backend scaffold (NestJS + Mongoose + JWT auth + lessons/tests/payments)
+4. ✅ Grammar feature — 4-level arc × 12 weeks × lesson/practice/review
+5. ✅ Atlas of Mistakes — editorial catalogue of VN-learner errors
+6. ✅ Listening / Reading / Writing / Speaking practice tests (scaffold)
+7. ✅ Payment flow — Casso bank-transfer + QR (VNPay/Momo deferred)
+8. 🔨 Free vs Pro paywall logic — tier checks wired, upsell copy in progress
+9. 🔨 AI Writing grading (Anthropic integration; mock grading fallback live)
+10. AI Speaking grading
+11. Translation feature (per-phrase VN popover)
+12. Weekly livestream embed + archive
 
 ### Post-launch
 
-9. Diagnostic onboarding flow
-10. Reading/Listening practice tests (content-heavy)
-11. Cohort view (median progress, anonymized)
-12. Email automation (daily 7 AM, weekly digest)
-13. Payment integration (VNPay/Momo)
-14. Referral program (editorial rewards)
+13. Diagnostic onboarding flow
+14. Full content fill — 48+ grammar lessons seeded, vocab/collocations/linking pending
+15. Cohort view (median progress, anonymized)
+16. Email automation (daily 7 AM, weekly digest)
+17. Referral program (editorial rewards)
 
 ---
 
@@ -469,7 +557,7 @@ When persisting (localStorage, API, rehydrate):
 - [ ] Mono figure label above it if section-level
 - [ ] Primary CTA uses signature button; others outlined or text links
 - [ ] Decorative elements rotated slightly
-- [ ] Photos duotone-treated
+- [ ] Photos duotone-treated (Polaroid component in `components/ui/Polaroid.tsx`)
 - [ ] Corners square or ≤2px
 - [ ] Shadows claret-tinted, not black
 - [ ] Empty state is editorial copy, not "No data"
@@ -477,6 +565,9 @@ When persisting (localStorage, API, rehydrate):
 - [ ] Pro-gated features show locked state with upsell copy
 - [ ] All copy in English, editorial voice
 - [ ] No hardcoded prices
+- [ ] Section separators use a single full-width `border-t border-line` (not `border-y`, not double hairlines)
+- [ ] Page content max-width is `1720px` on listing pages, `1440px` on reader/session pages
+- [ ] Don't stack TanStack layout routes without an `<Outlet />` — `app.X.tsx` next to `app.X.$Y.tsx` makes the first a layout, and it MUST render `<Outlet />` or the child never mounts
 
 ---
 
@@ -499,19 +590,27 @@ When persisting (localStorage, API, rehydrate):
 
 ---
 
-## Backend scaffold (in progress)
+## Backend (live)
 
-When scaffolding `backend/`:
-- NestJS CLI (`npx @nestjs/cli new backend --package-manager npm --strict`)
-- `@nestjs/mongoose` for MongoDB
-- Validate DTOs with Zod via custom `ZodValidationPipe`
-- Shared schemas imported via `@shared/*` from `../shared/`
-- JWT auth, 24h access tokens, localStorage Bearer header
-- bcrypt cost 12
-- `GET /` health check
-- CORS from `CORS_ORIGIN` env
-- Anthropic SDK wrapper for AI grading
-- Pricing endpoint `GET /pricing` from env
+Built on NestJS 11 + Mongoose. Root at `backend/`.
+
+**Modules present:**
+- `auth/` — login, register, JWT (24h access tokens)
+- `lessons/` — grammar lessons (48 seeded across 4 levels × 12 weeks) with `POST /lessons/reseed`
+- `tests/` — listening / reading / writing / speaking practice tests
+- `pricing/` — `GET /pricing` reads from env, never hardcoded
+- `payments/` — Casso webhook verification + session TTL
+- `common/` — `ZodValidationPipe`, `JwtAuthGuard`
+
+**Conventions:**
+- Shared schemas live in `shared/schemas/` at repo root, imported via `@shared/*`
+- DTO validation via `ZodValidationPipe` (custom, not `nestjs-zod`)
+- Passwords: bcrypt cost 12
+- CORS allow-list from `CORS_ORIGIN`
+- Anthropic SDK wrapped in a service; frontend NEVER calls Anthropic directly
+- Seed-on-empty pattern: `LessonsService.onModuleInit()` seeds from `data/lesson-seed.ts` only if collection is empty. Use `POST /lessons/reseed` (or the `scripts/reseed-lessons.ts` standalone) to force-replace.
+
+**Env keys:** see `backend/.env.example` — MongoDB URI, JWT secret, Anthropic key, pricing in VND, Casso webhook secret, Meridian bank account for VietQR.
 
 ---
 

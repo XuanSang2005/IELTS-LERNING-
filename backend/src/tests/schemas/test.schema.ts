@@ -12,7 +12,10 @@ import type {
 
 export type TestDocument = HydratedDocument<Test>
 
-@Schema({ timestamps: true, collection: 'tests' })
+// No `collection:` default — this schema is registered under four physical
+// collections (listening_tests / reading_tests / writing_tests / speaking_tests)
+// via MongooseModule.forFeature in TestsModule.
+@Schema({ timestamps: true })
 export class Test {
   /**
    * Stable external id (e.g. "writing-001"). Used as the lookup key everywhere;

@@ -5,12 +5,7 @@ import type { Discipline, BandLevel, Phase } from '@shared/schemas/practice'
 import type { Lesson, LessonSummary } from '@shared/schemas/lesson'
 import { LessonDocument } from './schemas/lesson.schema'
 import { LESSON_SEED } from './data/lesson-seed'
-import {
-  COLLOCATIONS_LESSON,
-  GRAMMAR_LESSON,
-  LINKING_LESSON,
-  VOCABULARY_LESSON,
-} from './lessons.constants'
+import { GRAMMAR_LESSON } from './lessons.constants'
 
 function toLesson(doc: LessonDocument): Lesson {
   return {
@@ -63,26 +58,23 @@ interface LessonFilter {
   phase?: Phase
 }
 
+// Only `grammar` is a supported lesson discipline today — vocabulary,
+// collocations, and linking were removed because no UI surface consumes them.
+// `Discipline` still includes all four values because noticing items and the
+// session planner depend on them; the service returns an empty list when a
+// caller asks for an unsupported discipline.
 @Injectable()
 export class LessonsService implements OnModuleInit {
-  private readonly byDiscipline: Record<Discipline, Model<LessonDocument>>
+  private readonly byDiscipline: Partial<Record<Discipline, Model<LessonDocument>>>
 
-  constructor(
-    @InjectModel(GRAMMAR_LESSON) private readonly grammarModel: Model<LessonDocument>,
-    @InjectModel(VOCABULARY_LESSON) private readonly vocabularyModel: Model<LessonDocument>,
-    @InjectModel(COLLOCATIONS_LESSON) private readonly collocationsModel: Model<LessonDocument>,
-    @InjectModel(LINKING_LESSON) private readonly linkingModel: Model<LessonDocument>,
-  ) {
+  constructor(@InjectModel(GRAMMAR_LESSON) private readonly grammarModel: Model<LessonDocument>) {
     this.byDiscipline = {
       grammar: this.grammarModel,
-      vocabulary: this.vocabularyModel,
-      collocations: this.collocationsModel,
-      linking: this.linkingModel,
     }
   }
 
   private allModels(): Array<Model<LessonDocument>> {
-    return [this.grammarModel, this.vocabularyModel, this.collocationsModel, this.linkingModel]
+    return [this.grammarModel]
   }
 
   async onModuleInit(): Promise<void> {
@@ -99,13 +91,15 @@ export class LessonsService implements OnModuleInit {
   async reseed(): Promise<{ seeded: number }> {
     await Promise.all(this.allModels().map((m) => m.deleteMany({})))
     let seeded = 0
-    for (const discipline of Object.keys(this.byDiscipline) as Discipline[]) {
+    for (const [discipline, model] of Object.entries(this.byDiscipline) as Array<
+      [Discipline, Model<LessonDocument>]
+    >) {
       const subset = LESSON_SEED.filter((l) => l.discipline === discipline).map((l) => ({
         ...l,
         slug: l.id,
       }))
       if (subset.length === 0) continue
-      await this.byDiscipline[discipline].insertMany(subset)
+      await model.insertMany(subset)
       seeded += subset.length
     }
     return { seeded }
@@ -117,9 +111,17 @@ export class LessonsService implements OnModuleInit {
     if (filter.week) q.week = filter.week
     if (filter.phase) q.phase = filter.phase
 
-    const models: Array<Model<LessonDocument>> = filter.discipline
-      ? [this.byDiscipline[filter.discipline]]
-      : this.allModels()
+    // If a specific discipline is asked for and we don't have lessons for it,
+    // return empty. This is the normal path for vocabulary / collocations /
+    // linking until their pages come online.
+    let models: Array<Model<LessonDocument>>
+    if (filter.discipline) {
+      const model = this.byDiscipline[filter.discipline]
+      if (!model) return []
+      models = [model]
+    } else {
+      models = this.allModels()
+    }
 
     const results = await Promise.all(models.map((m) => m.find(q).sort({ day: 1 }).exec()))
     const flat = results.flat().map(toSummary)
@@ -144,7 +146,9 @@ export class LessonsService implements OnModuleInit {
   }
 
   async findByDiscipline(discipline: Discipline): Promise<LessonSummary[]> {
-    const docs = await this.byDiscipline[discipline].find({}).sort({ day: 1 }).exec()
+    const model = this.byDiscipline[discipline]
+    if (!model) return []
+    const docs = await model.find({}).sort({ day: 1 }).exec()
     return docs.map(toSummary)
   }
 

@@ -46,7 +46,10 @@ class ExtensionSub {
 }
 const ExtensionSchema = SchemaFactory.createForClass(ExtensionSub)
 
-@Schema({ timestamps: true, collection: 'lessons' })
+// No `collection:` default — this schema is registered under three physical
+// collections (grammar_lessons / collocations_lessons / linking_lessons) via
+// MongooseModule.forFeature in LessonsModule. Vocabulary has no lesson model.
+@Schema({ timestamps: true })
 export class LessonDoc {
   @Prop({ required: true, unique: true, index: true })
   slug!: string

@@ -1,8 +1,5 @@
-// Mongoose model tokens for the per-discipline physical collections.
-// Lives in its own file to avoid a circular import between the service
-// (which uses the tokens via @InjectModel) and the module (which provides
-// them via MongooseModule.forFeature).
+// Mongoose model token for the grammar_lessons collection.
+// Vocabulary, collocations, and linking lessons were removed end-to-end because
+// no frontend surface consumes them. Add new tokens here if those disciplines
+// get their own pages.
 export const GRAMMAR_LESSON = 'GrammarLesson'
-export const VOCABULARY_LESSON = 'VocabularyLesson'
-export const COLLOCATIONS_LESSON = 'CollocationsLesson'
-export const LINKING_LESSON = 'LinkingLesson'

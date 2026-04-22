@@ -6,7 +6,7 @@ import { logout } from '@/lib/auth'
 
 const LINKS = [
   { label: 'Dashboard', to: '/app' as const, exactMatch: true },
-  { label: 'Tests', to: '/tests' as const, exactMatch: false },
+  { label: 'Test', to: '/tests' as const, exactMatch: false },
   { label: 'Lexicon', to: '/app/vocabulary' as const, exactMatch: true },
   { label: 'Grammar', to: '/app/grammar' as const, exactMatch: true },
 ] as const
@@ -74,7 +74,7 @@ export function AppNav() {
     <nav className="sticky top-0 z-40 border-b border-line bg-ivory">
       <div className="flex w-full items-center justify-between gap-6 px-4 py-4 md:gap-8 md:px-6 md:py-5 lg:gap-10 xl:gap-14 xl:px-8">
         {/* Wordmark */}
-        <Link to="/app" className="relative shrink-0">
+        <Link to="/" className="relative shrink-0">
           <span className="font-fraunces text-[26px] font-medium leading-none tracking-tight md:text-[32px] xl:text-[36px]">
             <span className="text-claret">M</span>
             <span className="text-ink">eridian</span>
@@ -144,12 +144,12 @@ export function AppNav() {
                   Profile & settings
                 </Link>
                 <Link
-                  to="/profile"
+                  to="/pricing"
                   role="menuitem"
                   onClick={() => setMenuOpen(false)}
                   className="block px-4 py-2 font-geist text-[18px] text-ink hover:bg-bone"
                 >
-                  Billing
+                  Billing & membership
                 </Link>
                 <hr className="my-2 border-t border-line" />
                 <button
