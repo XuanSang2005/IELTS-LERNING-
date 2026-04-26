@@ -1,0 +1,25 @@
+**/node_modules
+**/dist
+**/build
+**/.tanstack
+**/.git
+**/.github
+**/.vscode
+**/.claude
+**/.planning
+**/.husky
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+*.log
+*.md
+!CLAUDE.md
+frontend
+docs
+scripts
+.playwright-mcp
+*.png
+"Meridian Design System (1)"

@@ -7,9 +7,11 @@ interface BandSelectorProps {
   busy?: boolean
 }
 
+const ROMAN = ['I', 'II', 'III', 'IV'] as const
+
 export function BandSelector({ selected, onSelect, busy }: BandSelectorProps) {
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div className="border-t border-line">
       {BAND_OPTIONS.map((opt, idx) => {
         const active = selected === opt.level
         return (
@@ -18,38 +20,51 @@ export function BandSelector({ selected, onSelect, busy }: BandSelectorProps) {
             type="button"
             onClick={() => onSelect(opt.level)}
             disabled={busy}
-            className={`group relative overflow-hidden border p-7 text-left transition-all duration-300 disabled:cursor-wait ${
+            aria-pressed={active}
+            className={`group relative flex w-full items-start gap-5 border-b border-line px-5 py-7 text-left transition-colors duration-300 md:gap-8 md:px-7 md:py-9 ${
               active
-                ? 'border-ink bg-ink text-ivory'
-                : 'border-line bg-ivory text-ink hover:border-ink'
-            }`}
+                ? 'border-l-2 border-l-claret bg-bone/60'
+                : 'border-l-2 border-l-transparent hover:bg-bone/40'
+            } disabled:cursor-wait`}
           >
+            {/* Roman numeral — editorial left-rail */}
             <span
-              className={`absolute bottom-0 left-0 right-0 h-[2px] transition-colors ${
-                active ? 'bg-claret' : 'bg-transparent group-hover:bg-claret'
-              }`}
-            />
-            <p
-              className={`font-mono text-[10px] uppercase tracking-[0.25em] ${
-                active ? 'text-ivory/70' : 'text-graphite'
+              aria-hidden="true"
+              className={`shrink-0 font-fraunces text-[34px] italic leading-none md:w-10 md:text-[44px] ${
+                active ? 'text-claret' : 'text-line'
               }`}
             >
-              OPTION {String(idx + 1).padStart(2, '0')} · {opt.range.toUpperCase()}
-            </p>
-            <h3
-              className={`mt-3 font-fraunces text-[26px] leading-none ${
-                active ? 'text-ivory' : 'text-ink'
+              {ROMAN[idx]}
+            </span>
+
+            {/* Main column — pill + label + body */}
+            <div className="min-w-0 flex-1">
+              <p
+                className={`font-mono text-[11px] uppercase tracking-[0.28em] md:text-[12px] ${
+                  active ? 'text-claret' : 'text-graphite'
+                }`}
+              >
+                {opt.range.replace('Band ', 'B').replace('–', '—').toUpperCase()}
+              </p>
+              <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-baseline md:gap-6">
+                <h3 className="shrink-0 font-fraunces text-[26px] leading-none text-ink md:text-[32px]">
+                  {opt.label}.
+                </h3>
+                <p className="font-fraunces text-[17px] italic leading-relaxed text-graphite md:text-[19px]">
+                  &ldquo;{opt.body}&rdquo;
+                </p>
+              </div>
+            </div>
+
+            {/* Right rail — state indicator */}
+            <span
+              aria-hidden="true"
+              className={`mt-2 hidden shrink-0 font-mono text-[10px] uppercase tracking-[0.28em] md:inline-block ${
+                active ? 'text-claret' : 'text-line group-hover:text-graphite'
               }`}
             >
-              {opt.label}.
-            </h3>
-            <p
-              className={`mt-3 font-fraunces text-[19px] italic leading-relaxed ${
-                active ? 'text-ivory/80' : 'text-graphite'
-              }`}
-            >
-              "{opt.body}"
-            </p>
+              {active ? '◆ Selected' : ''}
+            </span>
           </button>
         )
       })}
