@@ -26,7 +26,10 @@ async function bootstrap() {
     credentials: true,
   })
   const port = Number(process.env.PORT ?? 4000)
-  await app.listen(port)
-  console.log(`[meridian-api] listening on :${port}`)
+  // Bind 0.0.0.0 explicitly — Railway/Docker proxies reach the container via the
+  // container network interface, not localhost. Default Node bind can fall back
+  // to ::1/127.0.0.1 in some Alpine images, producing 502 Bad Gateway at the edge.
+  await app.listen(port, '0.0.0.0')
+  console.log(`[meridian-api] listening on 0.0.0.0:${port}`)
 }
 void bootstrap()
