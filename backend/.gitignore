@@ -40,5 +40,6 @@ Thumbs.db
 *.swo
 
 # Local MongoDB data (if running locally)
-data/
+# Anchored to backend/ root — must NOT match backend/src/**/data/ source folders.
+/data/
 *.mongodb
