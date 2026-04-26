@@ -202,7 +202,7 @@ export function Hero() {
     <div className="relative flex flex-1 flex-col">
       <MastheadRule />
 
-      <section className="relative mx-auto w-full min-h-0 max-w-[1720px] flex-1 px-4 py-6 md:px-6 md:py-8 xl:px-8">
+      <section className="relative mx-auto w-full min-h-0 max-w-[1720px] flex-1 px-4 py-6 md:px-6 md:py-8 xl:px-8 2xl:pt-24">
         {/* Drifting feather in right gutter */}
         <motion.div
           aria-hidden="true"
