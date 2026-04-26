@@ -6,8 +6,16 @@
 FROM node:22-alpine AS builder
 WORKDIR /repo
 
+# Root deps (zod) — needed so shared/schemas/*.ts can resolve `import { z } from 'zod'`
+# via Node module lookup. Without this, the backend webpack build emits 50+ TS errors
+# because every Zod schema collapses to `any` and downstream inferred types fail.
+# --omit=dev skips ESLint/Husky etc; --ignore-scripts skips the `prepare: husky` hook
+# which fails inside Docker (no .git context).
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev --ignore-scripts
+
 COPY backend/package.json backend/package-lock.json ./backend/
-RUN npm --prefix backend ci
+RUN npm --prefix backend ci --ignore-scripts
 
 COPY shared ./shared
 COPY backend ./backend
