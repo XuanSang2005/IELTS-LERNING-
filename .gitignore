@@ -66,3 +66,6 @@ coverage/
 dashboard-current.png
 dashboard-mine-1.png
 *.local
+
+# ── Design references (kept local, not on GitHub) ─────────────────
+Meridian Design System (1)/
