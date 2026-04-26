@@ -11,6 +11,9 @@ RUN npm --prefix backend ci
 
 COPY shared ./shared
 COPY backend ./backend
+# Webpack bundling NestJS modules can spike past Node's default 512MB
+# heap and get OOM-killed silently inside Docker (exit 1 with no output).
+ENV NODE_OPTIONS=--max-old-space-size=4096
 RUN npm --prefix backend run build
 
 FROM node:22-alpine AS runner
