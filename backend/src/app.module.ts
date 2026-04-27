@@ -10,6 +10,9 @@ import { TestsModule } from './tests/tests.module'
 import { TestSubmissionsModule } from './test-submissions/test-submissions.module'
 import { LessonsModule } from './lessons/lessons.module'
 import { VocabularyModule } from './vocabulary/vocabulary.module'
+import { CollocationsModule } from './collocations/collocations.module'
+import { LinkingModule } from './linking/linking.module'
+import { DailyModule } from './daily/daily.module'
 import { PaymentsModule } from './payments/payments.module'
 import { PricingModule } from './pricing/pricing.module'
 
@@ -31,6 +34,9 @@ import { PricingModule } from './pricing/pricing.module'
     TestSubmissionsModule,
     LessonsModule,
     VocabularyModule,
+    CollocationsModule,
+    LinkingModule,
+    DailyModule,
     PaymentsModule,
     PricingModule,
   ],

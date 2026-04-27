@@ -7,10 +7,13 @@ import {
   useProfile,
   useTodayLog,
 } from '@/features/practice/hooks/practice-queries'
-import { useSessionBlueprint } from '@/features/session/hooks/use-session-blueprint'
 import { Polaroid } from '@/components/ui/Polaroid'
 import type { BandLevel, Discipline, UserProfile } from '@/schemas/practice'
-import type { SessionBlueprint } from '@/features/practice/utils/session-planner'
+import {
+  DAILY_STEPS,
+  ESTIMATED_MINUTES_BY_LEVEL,
+  STEP_MINUTES_BY_LEVEL,
+} from '@/features/daily/data/step-config'
 
 export const Route = createFileRoute('/app/')({
   component: Dashboard,
@@ -188,25 +191,28 @@ function TextLinkContent({ children }: { children: ReactNode }) {
 /* ───── Notebook sections ───── */
 
 function NotebookSession({
-  blueprint,
+  level,
   stepsDone,
 }: {
-  blueprint: SessionBlueprint
+  level: BandLevel
   stepsDone: number
 }) {
-  const allDone = stepsDone >= blueprint.steps.length
-  const editorsNote = EDITORS_NOTES[blueprint.focus.level]
-  const cleanTitle = blueprint.title.replace(/\.$/, '')
+  const totalSteps = DAILY_STEPS.length
+  const allDone = stepsDone >= totalSteps
+  const editorsNote = EDITORS_NOTES[level]
+  const totalMinutes = ESTIMATED_MINUTES_BY_LEVEL[level]
+  const stepMinutes = STEP_MINUTES_BY_LEVEL[level]
   return (
     <section>
       <ChapterDivider
         numeral="I"
-        title={cleanTitle}
-        meta={`${blueprint.totalMinutes} MIN · ${blueprint.steps.length} STEP${blueprint.steps.length === 1 ? '' : 'S'}`}
+        title="Today's session"
+        meta={`${totalMinutes} MIN · ${totalSteps} STEPS`}
       />
       <RuledPage>
         <p className="m-0 max-w-[52ch] pt-1 font-fraunces text-[22px] italic leading-[1.45] text-graphite">
-          {blueprint.tagline}
+          Review yesterday. Read. Listen. Learn ten words. Write something short and have it
+          examined.
         </p>
 
         {/* Editor's note — margin annotation style */}
@@ -222,10 +228,9 @@ function NotebookSession({
 
         {/* Handwritten-style checklist */}
         <ol className="m-0 mt-8 list-none p-0">
-          {blueprint.steps.map((s, i) => {
-            const n = i + 1
-            const isDone = stepsDone >= n
-            const isCurrent = stepsDone + 1 === n
+          {DAILY_STEPS.map((s) => {
+            const isDone = stepsDone >= s.number
+            const isCurrent = stepsDone + 1 === s.number
             const ringClass = isDone
               ? 'border-sage bg-sage text-ivory'
               : isCurrent
@@ -233,7 +238,7 @@ function NotebookSession({
                 : 'border-line bg-transparent text-claret'
             return (
               <li
-                key={s.id}
+                key={s.number}
                 className="flex items-baseline gap-5 border-b border-dashed border-line py-2.5"
               >
                 <span
@@ -249,7 +254,7 @@ function NotebookSession({
                   </span>
                 </span>
                 <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-graphite">
-                  {s.minutes} MIN
+                  {stepMinutes[s.kind]} MIN
                 </span>
               </li>
             )
@@ -266,7 +271,7 @@ function NotebookSession({
             <Link
               to="/app/session"
               search={{
-                step: (Math.min(stepsDone + 1, blueprint.steps.length) as 1 | 2 | 3 | 4 | 5 | 6),
+                step: (Math.min(stepsDone + 1, totalSteps) as 1 | 2 | 3 | 4 | 5),
               }}
               className={PRIMARY_BUTTON_CLASS}
             >
@@ -495,7 +500,6 @@ function Dashboard() {
   const { isPending, isError } = usePracticeState()
   const profile = useProfile()
   const dueCount = useDueItems().length
-  const blueprint = useSessionBlueprint()
   const todayLog = useTodayLog()
 
   if (isPending || !profile) {
@@ -572,7 +576,7 @@ function Dashboard() {
 
       {/* ══════ Notebook chapters ══════ */}
       <div className="mx-auto w-full max-w-[1720px] px-10">
-        {blueprint && <NotebookSession blueprint={blueprint} stepsDone={stepsDone} />}
+        <NotebookSession level={profile.currentBand.level} stepsDone={stepsDone} />
         <NotebookPhase profile={profile} />
         <NotebookDisciplines profile={profile} />
         <NotebookBand profile={profile} />

@@ -1,5 +1,7 @@
-// Mongoose model token for the grammar_lessons collection.
-// Vocabulary, collocations, and linking lessons were removed end-to-end because
-// no frontend surface consumes them. Add new tokens here if those disciplines
-// get their own pages.
+// Mongoose model tokens for each per-discipline lessons collection. The
+// LessonsService maps `Discipline` to one of these models so a single
+// LessonDocument schema serves four physical collections.
 export const GRAMMAR_LESSON = 'GrammarLesson'
+export const VOCABULARY_LESSON = 'VocabularyLesson'
+export const COLLOCATION_LESSON = 'CollocationLesson'
+export const LINKING_LESSON = 'LinkingLesson'

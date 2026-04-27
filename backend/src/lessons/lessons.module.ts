@@ -3,15 +3,23 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { LessonsController } from './lessons.controller'
 import { LessonsService } from './lessons.service'
 import { LessonMongooseSchema } from './schemas/lesson.schema'
-import { GRAMMAR_LESSON } from './lessons.constants'
+import {
+  COLLOCATION_LESSON,
+  GRAMMAR_LESSON,
+  LINKING_LESSON,
+  VOCABULARY_LESSON,
+} from './lessons.constants'
 
-// Grammar-only: vocabulary, collocations, and linking lesson collections were
-// removed because no frontend surface reads them. Add more registrations here
-// (and seed entries + pages) when those disciplines come online.
+// Four physical collections sharing one LessonDocument schema. Splitting them
+// keeps per-discipline reseeds atomic and lets us index/query each surface
+// independently as content scales.
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: GRAMMAR_LESSON, schema: LessonMongooseSchema, collection: 'grammar_lessons' },
+      { name: VOCABULARY_LESSON, schema: LessonMongooseSchema, collection: 'vocabulary_lessons' },
+      { name: COLLOCATION_LESSON, schema: LessonMongooseSchema, collection: 'collocation_lessons' },
+      { name: LINKING_LESSON, schema: LessonMongooseSchema, collection: 'linking_lessons' },
     ]),
   ],
   controllers: [LessonsController],

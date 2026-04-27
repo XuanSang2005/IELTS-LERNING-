@@ -31,7 +31,6 @@ import { Route as TestsTestIdIndexRouteImport } from './routes/tests.$testId.ind
 import { Route as AppSessionIndexRouteImport } from './routes/app.session.index'
 import { Route as AppGrammarIndexRouteImport } from './routes/app.grammar.index'
 import { Route as TestsTestIdResultsRouteImport } from './routes/tests.$testId.results'
-import { Route as AppSessionCompleteRouteImport } from './routes/app.session.complete'
 import { Route as AppGrammarWeekRouteImport } from './routes/app.grammar.$week'
 
 const TestsRoute = TestsRouteImport.update({
@@ -144,11 +143,6 @@ const TestsTestIdResultsRoute = TestsTestIdResultsRouteImport.update({
   path: '/results',
   getParentRoute: () => TestsTestIdRoute,
 } as any)
-const AppSessionCompleteRoute = AppSessionCompleteRouteImport.update({
-  id: '/complete',
-  path: '/complete',
-  getParentRoute: () => AppSessionRoute,
-} as any)
 const AppGrammarWeekRoute = AppGrammarWeekRouteImport.update({
   id: '/$week',
   path: '/$week',
@@ -175,7 +169,6 @@ export interface FileRoutesByFullPath {
   '/app/': typeof AppIndexRoute
   '/tests/': typeof TestsIndexRoute
   '/app/grammar/$week': typeof AppGrammarWeekRoute
-  '/app/session/complete': typeof AppSessionCompleteRoute
   '/tests/$testId/results': typeof TestsTestIdResultsRoute
   '/app/grammar/': typeof AppGrammarIndexRoute
   '/app/session/': typeof AppSessionIndexRoute
@@ -196,7 +189,6 @@ export interface FileRoutesByTo {
   '/app': typeof AppIndexRoute
   '/tests': typeof TestsIndexRoute
   '/app/grammar/$week': typeof AppGrammarWeekRoute
-  '/app/session/complete': typeof AppSessionCompleteRoute
   '/tests/$testId/results': typeof TestsTestIdResultsRoute
   '/app/grammar': typeof AppGrammarIndexRoute
   '/app/session': typeof AppSessionIndexRoute
@@ -223,7 +215,6 @@ export interface FileRoutesById {
   '/app/': typeof AppIndexRoute
   '/tests/': typeof TestsIndexRoute
   '/app/grammar/$week': typeof AppGrammarWeekRoute
-  '/app/session/complete': typeof AppSessionCompleteRoute
   '/tests/$testId/results': typeof TestsTestIdResultsRoute
   '/app/grammar/': typeof AppGrammarIndexRoute
   '/app/session/': typeof AppSessionIndexRoute
@@ -251,7 +242,6 @@ export interface FileRouteTypes {
     | '/app/'
     | '/tests/'
     | '/app/grammar/$week'
-    | '/app/session/complete'
     | '/tests/$testId/results'
     | '/app/grammar/'
     | '/app/session/'
@@ -272,7 +262,6 @@ export interface FileRouteTypes {
     | '/app'
     | '/tests'
     | '/app/grammar/$week'
-    | '/app/session/complete'
     | '/tests/$testId/results'
     | '/app/grammar'
     | '/app/session'
@@ -298,7 +287,6 @@ export interface FileRouteTypes {
     | '/app/'
     | '/tests/'
     | '/app/grammar/$week'
-    | '/app/session/complete'
     | '/tests/$testId/results'
     | '/app/grammar/'
     | '/app/session/'
@@ -476,13 +464,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TestsTestIdResultsRouteImport
       parentRoute: typeof TestsTestIdRoute
     }
-    '/app/session/complete': {
-      id: '/app/session/complete'
-      path: '/complete'
-      fullPath: '/app/session/complete'
-      preLoaderRoute: typeof AppSessionCompleteRouteImport
-      parentRoute: typeof AppSessionRoute
-    }
     '/app/grammar/$week': {
       id: '/app/grammar/$week'
       path: '/$week'
@@ -508,12 +489,10 @@ const AppGrammarRouteWithChildren = AppGrammarRoute._addFileChildren(
 )
 
 interface AppSessionRouteChildren {
-  AppSessionCompleteRoute: typeof AppSessionCompleteRoute
   AppSessionIndexRoute: typeof AppSessionIndexRoute
 }
 
 const AppSessionRouteChildren: AppSessionRouteChildren = {
-  AppSessionCompleteRoute: AppSessionCompleteRoute,
   AppSessionIndexRoute: AppSessionIndexRoute,
 }
 

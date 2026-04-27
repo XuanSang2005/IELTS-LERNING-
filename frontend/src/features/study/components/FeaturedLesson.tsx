@@ -5,7 +5,7 @@ const ease = [0.22, 1, 0.36, 1] as const
 export function FeaturedLesson() {
   return (
     <section className="my-16 border-y border-line py-14">
-      <div className="mx-auto grid w-full max-w-[1720px] grid-cols-1 gap-10 px-6 md:px-10 lg:grid-cols-12 xl:px-14">
+      <div className="mx-auto grid w-full max-w-[1720px] grid-cols-1 gap-10 px-6 md:px-10 lg:grid-cols-12 lg:items-center xl:px-14">
         {/* Left — text (7 cols) */}
         <div className="lg:col-span-7">
           <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-claret">
@@ -51,7 +51,7 @@ export function FeaturedLesson() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease, delay: 0.2 }}
-            className="relative mx-auto max-w-[460px] rotate-[-2deg] bg-ivory p-3 shadow-[0_25px_50px_-12px_rgba(20,18,16,0.25)]"
+            className="relative ml-auto max-w-[460px] rotate-[-2deg] bg-ivory p-3 shadow-[0_25px_50px_-12px_rgba(20,18,16,0.25)]"
           >
             <div className="relative overflow-hidden bg-claret">
               <img

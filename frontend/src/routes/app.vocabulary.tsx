@@ -1,6 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { VocabularyPage } from '@/features/vocabulary/components/VocabularyPage'
+import { z } from 'zod'
+import { LexiconDisciplineSchema } from '@shared/schemas/lexicon'
+import { LexiconPage } from '@/features/lexicon/components/LexiconPage'
+
+const searchSchema = z.object({
+  discipline: LexiconDisciplineSchema.optional(),
+})
 
 export const Route = createFileRoute('/app/vocabulary')({
-  component: VocabularyPage,
+  component: LexiconPage,
+  validateSearch: searchSchema,
 })
