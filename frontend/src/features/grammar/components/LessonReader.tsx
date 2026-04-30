@@ -261,7 +261,7 @@ function FormulaRow({ label, formula }: { label: string; formula: string }) {
   const isMultiRule = subRules.length > 1
 
   return (
-    <div className="relative border border-claret/40 bg-ivory px-6 py-7 shadow-[0_12px_30px_-18px_rgba(107,31,26,0.25)] md:px-8 md:py-8">
+    <div className="relative overflow-x-auto border border-claret/40 bg-ivory px-4 py-7 shadow-[0_12px_30px_-18px_rgba(107,31,26,0.25)] sm:px-6 md:px-8 md:py-8">
       <span
         aria-hidden="true"
         className="pointer-events-none absolute left-0 top-0 h-full w-[3px] bg-claret"
@@ -277,7 +277,7 @@ function FormulaRow({ label, formula }: { label: string; formula: string }) {
           {subRules.map((rule, i) => (
             <li
               key={i}
-              className="flex items-start gap-3 font-mono text-[17px] leading-[1.7] text-ink md:text-[20px]"
+              className="flex flex-wrap items-start gap-x-3 gap-y-1 font-mono text-[16px] leading-[1.7] text-ink md:text-[20px]"
             >
               <span
                 aria-hidden="true"
@@ -288,7 +288,7 @@ function FormulaRow({ label, formula }: { label: string; formula: string }) {
           ))}
         </ul>
       ) : (
-        <p className="font-mono text-[18px] leading-[1.75] text-ink md:text-[21px]">
+        <p className="wrap-break-word font-mono text-[16px] leading-[1.75] text-ink md:text-[21px]">
           {renderFormulaBody(formula)}
         </p>
       )}

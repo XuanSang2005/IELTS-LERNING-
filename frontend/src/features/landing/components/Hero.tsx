@@ -160,7 +160,7 @@ const DISCIPLINES: Discipline[] = [
 
 function DisciplineStrip() {
   return (
-    <div className="mx-auto hidden w-full max-w-[1720px] px-4 pb-16 md:px-6 xl:px-8 min-[1921px]:block">
+    <div className="mx-auto block w-full max-w-[1720px] px-4 pb-16 md:px-6 xl:px-8">
       <ul className="flex flex-col border-y border-line md:flex-row">
         {DISCIPLINES.map((d, i) => (
           <li
@@ -235,7 +235,7 @@ export function Hero() {
             <FadeUp delay={0.15}>
               <h1 className="mt-6 font-fraunces text-[clamp(42px,5vw,84px)] font-normal leading-[0.92] tracking-[-0.025em] text-ink [word-break:keep-all] hyphens-none">
                 <span className="block">The quiet craft</span>
-                <span className="block pl-[8%] md:pl-[12%]">of scoring</span>
+                <span className="block md:pl-[12%]">of scoring</span>
                 <span className="block">
                   <span className="relative inline-block">
                     <em className="font-normal italic">Band&nbsp;9</em>
@@ -257,7 +257,7 @@ export function Hero() {
                   ,
                 </span>
               </h1>
-              <p className="mt-2 pl-[14%] font-fraunces text-[clamp(22px,2.4vw,44px)] italic leading-[1.1] tracking-[-0.015em] text-graphite md:pl-[24%]">
+              <p className="mt-2 font-fraunces text-[clamp(22px,2.4vw,44px)] italic leading-[1.1] tracking-[-0.015em] text-graphite md:pl-[24%]">
                 without the noise.
               </p>
             </FadeUp>

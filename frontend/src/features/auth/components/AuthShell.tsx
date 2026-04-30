@@ -74,7 +74,7 @@ export function AuthShell({
           initial={{ opacity: 0, x: -12 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, ease }}
-          className="relative flex min-h-[35vh] flex-col justify-between overflow-hidden bg-bone px-8 py-10 md:px-14 md:py-14 lg:col-span-6 lg:min-h-screen lg:p-20"
+          className="relative flex flex-col justify-between gap-8 overflow-hidden bg-bone px-6 py-8 sm:px-8 sm:py-10 md:gap-0 md:px-14 md:py-14 lg:col-span-6 lg:min-h-screen lg:p-20"
         >
           <Link to="/" className="relative z-10 inline-flex self-start">
             <span className="font-fraunces text-[24px] font-medium leading-none tracking-tight md:text-[24px]">
@@ -83,11 +83,11 @@ export function AuthShell({
             </span>
           </Link>
 
-          <div className="relative z-10 mt-6 max-w-[22ch] lg:mt-0">
-            <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-claret">
+          <div className="relative z-10 max-w-[22ch] md:mt-6 lg:mt-0">
+            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-claret md:text-[11px]">
               {eyebrow}
             </p>
-            <h2 className="mt-4 font-fraunces text-[clamp(44px,6.5vw,92px)] font-normal leading-[0.95] tracking-[-0.02em] text-ink [word-break:keep-all] hyphens-none">
+            <h2 className="mt-3 font-fraunces text-[clamp(34px,6.5vw,92px)] font-normal leading-[0.95] tracking-[-0.02em] text-ink [word-break:keep-all] hyphens-none md:mt-4">
               <span className="block">{headingLead}</span>
               <span className="relative inline-block">
                 <em className="font-normal italic">{headingItalic}</em>
@@ -96,7 +96,7 @@ export function AuthShell({
               {headingTail ? <span>{headingTail}</span> : null}
             </h2>
 
-            <blockquote className="mt-10 border-l-2 border-claret pl-5">
+            <blockquote className="mt-6 hidden border-l-2 border-claret pl-5 md:mt-10 md:block">
               <p className="font-fraunces text-[22px] italic leading-[1.55] text-graphite md:text-[24px]">
                 "{quote}"
               </p>
@@ -123,7 +123,7 @@ export function AuthShell({
           initial={{ opacity: 0, x: 12 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, ease, delay: 0.1 }}
-          className="flex items-center justify-center bg-ivory px-6 py-10 md:p-14 lg:col-span-6 lg:min-h-screen"
+          className="flex items-center justify-center bg-ivory px-6 py-10 sm:p-10 md:p-14 lg:col-span-6 lg:min-h-screen"
         >
           <div className="w-full max-w-[440px]">{children}</div>
         </motion.section>

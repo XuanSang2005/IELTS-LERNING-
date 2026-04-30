@@ -135,21 +135,35 @@ function ChapterDivider({
 
 /* ───── Ruled page ───── */
 
-function RuledPage({ children, className = '' }: { children: ReactNode; className?: string }) {
+function RuledPage({
+  children,
+  className = '',
+  plain = false,
+}: {
+  children: ReactNode
+  className?: string
+  plain?: boolean
+}) {
   return (
     <div
       className={`relative pb-7 pl-[60px] pr-5 pt-2 ${className}`}
-      style={{
-        backgroundImage:
-          'repeating-linear-gradient(to bottom, transparent 0 31px, rgba(201,191,168,0.45) 31px 32px)',
-        backgroundSize: '100% 32px',
-      }}
+      style={
+        plain
+          ? undefined
+          : {
+              backgroundImage:
+                'repeating-linear-gradient(to bottom, transparent 0 31px, rgba(201,191,168,0.45) 31px 32px)',
+              backgroundSize: '100% 32px',
+            }
+      }
     >
-      <div
-        aria-hidden="true"
-        className="absolute bottom-0 left-10 top-0 w-px bg-claret"
-        style={{ opacity: 0.55 }}
-      />
+      {!plain && (
+        <div
+          aria-hidden="true"
+          className="absolute bottom-0 left-10 top-0 w-px bg-claret"
+          style={{ opacity: 0.55 }}
+        />
+      )}
       {children}
     </div>
   )
@@ -344,64 +358,78 @@ function NotebookPhase({ profile }: { profile: UserProfile }) {
   )
 }
 
+const DISCIPLINE_HINTS: Record<Discipline, string> = {
+  grammar: 'Begin with conditionals',
+  vocabulary: 'Academic clusters · C1 register',
+  collocations: 'Natural word pairings',
+  linking: 'Connectors for cohesion',
+}
+
 function NotebookDisciplines({ profile }: { profile: UserProfile }) {
   return (
     <section>
       <ChapterDivider numeral="III" title="The four disciplines" meta="LEDGER" />
-      <RuledPage>
-        <div className="mt-1">
-          {/* Header row */}
-          <div className="grid grid-cols-[1fr_120px_1fr_60px] border-b-2 border-ink py-2">
-            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-graphite">
-              Discipline
-            </span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-graphite">
-              Lessons
-            </span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-graphite">
-              Completion
-            </span>
-            <span className="text-right font-mono text-[10px] uppercase tracking-[0.25em] text-graphite">
-              %
-            </span>
-          </div>
+      <RuledPage plain>
+        <div className="mt-2 grid grid-cols-1 gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
           {DISCIPLINE_ORDER.map((d, i) => {
             const { completed, total } = profile.disciplineProgress[d]
             const pct = total ? Math.round((completed / total) * 100) : 0
-            const ticks = 16
-            const filledTicks = total ? Math.round((completed / total) * ticks) : 0
+            const started = completed > 0
             return (
               <Link
                 key={d}
                 to="/study"
                 search={{ discipline: d }}
-                className="group grid grid-cols-[1fr_120px_1fr_60px] items-center border-b border-line py-3.5 transition-colors duration-200 hover:bg-bone/40"
+                className="group relative flex flex-col gap-5 bg-ivory p-6 transition-colors duration-200 hover:bg-bone/60 md:p-7"
               >
-                <span className="font-fraunces text-[24px] text-ink">
-                  <span className="mr-2.5 text-claret">№ {String(i + 1).padStart(2, '0')}</span>
-                  <span className="border-b border-transparent transition-colors duration-200 group-hover:border-ink">
-                    {DISCIPLINE_LABELS[d]}
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-x-0 bottom-0 h-[2px] origin-left scale-x-0 bg-claret transition-transform duration-300 group-hover:scale-x-100"
+                />
+
+                <div className="flex items-baseline justify-between">
+                  <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.28em] text-claret">
+                    № {String(i + 1).padStart(2, '0')}
                   </span>
-                </span>
-                <span className="font-mono text-[12px] tracking-[0.2em] text-ink">
-                  {completed} / {total}
-                </span>
-                <span className="flex gap-[3px]">
-                  {Array.from({ length: ticks }).map((_, k) => {
-                    const filled = k < filledTicks
-                    return (
-                      <span
-                        key={k}
-                        className={`inline-block h-3.5 w-0.5 ${filled ? 'bg-claret' : 'bg-line'}`}
-                        style={{ transform: `rotate(${k % 2 ? 3 : -3}deg)` }}
-                      />
-                    )
-                  })}
-                </span>
-                <span className="text-right font-fraunces text-[22px] text-claret">
-                  {pct}
-                  <span className="text-[14px] text-graphite">%</span>
-                </span>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.28em] text-graphite">
+                    {started ? 'IN PROGRESS' : 'NOT STARTED'}
+                  </span>
+                </div>
+
+                <h4 className="m-0 font-fraunces text-[26px] leading-tight text-ink md:text-[28px]">
+                  {DISCIPLINE_LABELS[d]}
+                </h4>
+
+                <div>
+                  <p className="m-0 font-fraunces text-[40px] leading-none text-ink md:text-[48px]">
+                    <span className="text-ink">{completed}</span>
+                    <span className="text-graphite"> / {total}</span>
+                  </p>
+                  <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.28em] text-graphite">
+                    LESSONS · {pct}%
+                  </p>
+                </div>
+
+                <div
+                  className="relative h-[2px] bg-line"
+                  role="progressbar"
+                  aria-valuenow={pct}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-label={`${DISCIPLINE_LABELS[d]} progress`}
+                >
+                  <span
+                    className="absolute inset-y-0 left-0 bg-claret transition-all duration-500"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+
+                <p className="mt-auto flex items-baseline justify-between gap-3 font-fraunces text-[15px] italic text-graphite">
+                  <span>{DISCIPLINE_HINTS[d]}</span>
+                  <span className="text-claret transition-transform duration-200 group-hover:translate-x-0.5">
+                    →
+                  </span>
+                </p>
               </Link>
             )
           })}

@@ -26,11 +26,14 @@ import { Route as PayPaymentIdRouteImport } from './routes/pay.$paymentId'
 import { Route as OnboardingBandRouteImport } from './routes/onboarding.band'
 import { Route as AppVocabularyRouteImport } from './routes/app.vocabulary'
 import { Route as AppSessionRouteImport } from './routes/app.session'
+import { Route as AppLexiconRouteImport } from './routes/app.lexicon'
 import { Route as AppGrammarRouteImport } from './routes/app.grammar'
 import { Route as TestsTestIdIndexRouteImport } from './routes/tests.$testId.index'
 import { Route as AppSessionIndexRouteImport } from './routes/app.session.index'
+import { Route as AppLexiconIndexRouteImport } from './routes/app.lexicon.index'
 import { Route as AppGrammarIndexRouteImport } from './routes/app.grammar.index'
 import { Route as TestsTestIdResultsRouteImport } from './routes/tests.$testId.results'
+import { Route as AppLexiconWeekRouteImport } from './routes/app.lexicon.$week'
 import { Route as AppGrammarWeekRouteImport } from './routes/app.grammar.$week'
 
 const TestsRoute = TestsRouteImport.update({
@@ -118,6 +121,11 @@ const AppSessionRoute = AppSessionRouteImport.update({
   path: '/session',
   getParentRoute: () => AppRoute,
 } as any)
+const AppLexiconRoute = AppLexiconRouteImport.update({
+  id: '/lexicon',
+  path: '/lexicon',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppGrammarRoute = AppGrammarRouteImport.update({
   id: '/grammar',
   path: '/grammar',
@@ -133,6 +141,11 @@ const AppSessionIndexRoute = AppSessionIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppSessionRoute,
 } as any)
+const AppLexiconIndexRoute = AppLexiconIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppLexiconRoute,
+} as any)
 const AppGrammarIndexRoute = AppGrammarIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -142,6 +155,11 @@ const TestsTestIdResultsRoute = TestsTestIdResultsRouteImport.update({
   id: '/results',
   path: '/results',
   getParentRoute: () => TestsTestIdRoute,
+} as any)
+const AppLexiconWeekRoute = AppLexiconWeekRouteImport.update({
+  id: '/$week',
+  path: '/$week',
+  getParentRoute: () => AppLexiconRoute,
 } as any)
 const AppGrammarWeekRoute = AppGrammarWeekRouteImport.update({
   id: '/$week',
@@ -161,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/study': typeof StudyRoute
   '/tests': typeof TestsRouteWithChildren
   '/app/grammar': typeof AppGrammarRouteWithChildren
+  '/app/lexicon': typeof AppLexiconRouteWithChildren
   '/app/session': typeof AppSessionRouteWithChildren
   '/app/vocabulary': typeof AppVocabularyRoute
   '/onboarding/band': typeof OnboardingBandRoute
@@ -169,8 +188,10 @@ export interface FileRoutesByFullPath {
   '/app/': typeof AppIndexRoute
   '/tests/': typeof TestsIndexRoute
   '/app/grammar/$week': typeof AppGrammarWeekRoute
+  '/app/lexicon/$week': typeof AppLexiconWeekRoute
   '/tests/$testId/results': typeof TestsTestIdResultsRoute
   '/app/grammar/': typeof AppGrammarIndexRoute
+  '/app/lexicon/': typeof AppLexiconIndexRoute
   '/app/session/': typeof AppSessionIndexRoute
   '/tests/$testId/': typeof TestsTestIdIndexRoute
 }
@@ -189,8 +210,10 @@ export interface FileRoutesByTo {
   '/app': typeof AppIndexRoute
   '/tests': typeof TestsIndexRoute
   '/app/grammar/$week': typeof AppGrammarWeekRoute
+  '/app/lexicon/$week': typeof AppLexiconWeekRoute
   '/tests/$testId/results': typeof TestsTestIdResultsRoute
   '/app/grammar': typeof AppGrammarIndexRoute
+  '/app/lexicon': typeof AppLexiconIndexRoute
   '/app/session': typeof AppSessionIndexRoute
   '/tests/$testId': typeof TestsTestIdIndexRoute
 }
@@ -207,6 +230,7 @@ export interface FileRoutesById {
   '/study': typeof StudyRoute
   '/tests': typeof TestsRouteWithChildren
   '/app/grammar': typeof AppGrammarRouteWithChildren
+  '/app/lexicon': typeof AppLexiconRouteWithChildren
   '/app/session': typeof AppSessionRouteWithChildren
   '/app/vocabulary': typeof AppVocabularyRoute
   '/onboarding/band': typeof OnboardingBandRoute
@@ -215,8 +239,10 @@ export interface FileRoutesById {
   '/app/': typeof AppIndexRoute
   '/tests/': typeof TestsIndexRoute
   '/app/grammar/$week': typeof AppGrammarWeekRoute
+  '/app/lexicon/$week': typeof AppLexiconWeekRoute
   '/tests/$testId/results': typeof TestsTestIdResultsRoute
   '/app/grammar/': typeof AppGrammarIndexRoute
+  '/app/lexicon/': typeof AppLexiconIndexRoute
   '/app/session/': typeof AppSessionIndexRoute
   '/tests/$testId/': typeof TestsTestIdIndexRoute
 }
@@ -234,6 +260,7 @@ export interface FileRouteTypes {
     | '/study'
     | '/tests'
     | '/app/grammar'
+    | '/app/lexicon'
     | '/app/session'
     | '/app/vocabulary'
     | '/onboarding/band'
@@ -242,8 +269,10 @@ export interface FileRouteTypes {
     | '/app/'
     | '/tests/'
     | '/app/grammar/$week'
+    | '/app/lexicon/$week'
     | '/tests/$testId/results'
     | '/app/grammar/'
+    | '/app/lexicon/'
     | '/app/session/'
     | '/tests/$testId/'
   fileRoutesByTo: FileRoutesByTo
@@ -262,8 +291,10 @@ export interface FileRouteTypes {
     | '/app'
     | '/tests'
     | '/app/grammar/$week'
+    | '/app/lexicon/$week'
     | '/tests/$testId/results'
     | '/app/grammar'
+    | '/app/lexicon'
     | '/app/session'
     | '/tests/$testId'
   id:
@@ -279,6 +310,7 @@ export interface FileRouteTypes {
     | '/study'
     | '/tests'
     | '/app/grammar'
+    | '/app/lexicon'
     | '/app/session'
     | '/app/vocabulary'
     | '/onboarding/band'
@@ -287,8 +319,10 @@ export interface FileRouteTypes {
     | '/app/'
     | '/tests/'
     | '/app/grammar/$week'
+    | '/app/lexicon/$week'
     | '/tests/$testId/results'
     | '/app/grammar/'
+    | '/app/lexicon/'
     | '/app/session/'
     | '/tests/$testId/'
   fileRoutesById: FileRoutesById
@@ -429,6 +463,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSessionRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/lexicon': {
+      id: '/app/lexicon'
+      path: '/lexicon'
+      fullPath: '/app/lexicon'
+      preLoaderRoute: typeof AppLexiconRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/grammar': {
       id: '/app/grammar'
       path: '/grammar'
@@ -450,6 +491,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSessionIndexRouteImport
       parentRoute: typeof AppSessionRoute
     }
+    '/app/lexicon/': {
+      id: '/app/lexicon/'
+      path: '/'
+      fullPath: '/app/lexicon/'
+      preLoaderRoute: typeof AppLexiconIndexRouteImport
+      parentRoute: typeof AppLexiconRoute
+    }
     '/app/grammar/': {
       id: '/app/grammar/'
       path: '/'
@@ -463,6 +511,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/tests/$testId/results'
       preLoaderRoute: typeof TestsTestIdResultsRouteImport
       parentRoute: typeof TestsTestIdRoute
+    }
+    '/app/lexicon/$week': {
+      id: '/app/lexicon/$week'
+      path: '/$week'
+      fullPath: '/app/lexicon/$week'
+      preLoaderRoute: typeof AppLexiconWeekRouteImport
+      parentRoute: typeof AppLexiconRoute
     }
     '/app/grammar/$week': {
       id: '/app/grammar/$week'
@@ -488,6 +543,20 @@ const AppGrammarRouteWithChildren = AppGrammarRoute._addFileChildren(
   AppGrammarRouteChildren,
 )
 
+interface AppLexiconRouteChildren {
+  AppLexiconWeekRoute: typeof AppLexiconWeekRoute
+  AppLexiconIndexRoute: typeof AppLexiconIndexRoute
+}
+
+const AppLexiconRouteChildren: AppLexiconRouteChildren = {
+  AppLexiconWeekRoute: AppLexiconWeekRoute,
+  AppLexiconIndexRoute: AppLexiconIndexRoute,
+}
+
+const AppLexiconRouteWithChildren = AppLexiconRoute._addFileChildren(
+  AppLexiconRouteChildren,
+)
+
 interface AppSessionRouteChildren {
   AppSessionIndexRoute: typeof AppSessionIndexRoute
 }
@@ -502,6 +571,7 @@ const AppSessionRouteWithChildren = AppSessionRoute._addFileChildren(
 
 interface AppRouteChildren {
   AppGrammarRoute: typeof AppGrammarRouteWithChildren
+  AppLexiconRoute: typeof AppLexiconRouteWithChildren
   AppSessionRoute: typeof AppSessionRouteWithChildren
   AppVocabularyRoute: typeof AppVocabularyRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -509,6 +579,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppGrammarRoute: AppGrammarRouteWithChildren,
+  AppLexiconRoute: AppLexiconRouteWithChildren,
   AppSessionRoute: AppSessionRouteWithChildren,
   AppVocabularyRoute: AppVocabularyRoute,
   AppIndexRoute: AppIndexRoute,

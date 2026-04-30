@@ -51,7 +51,7 @@ export function TestCard({ test, index = 0 }: TestCardProps) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: index * 0.04 }}
-      className="flex h-full flex-col border border-line bg-bone p-6 transition-shadow duration-200 hover:shadow-[0_20px_40px_-15px_rgba(107,31,26,0.15)]"
+      className="flex h-full min-h-[300px] flex-col border border-line bg-bone p-6 transition-shadow duration-200 hover:shadow-[0_20px_40px_-15px_rgba(107,31,26,0.15)]"
     >
       {/* Eyebrow row — skill on the left, single right-aligned badge */}
       <div className="flex items-center justify-between gap-3">

@@ -9,6 +9,7 @@ import { SubmissionsModule } from './submissions/submissions.module'
 import { TestsModule } from './tests/tests.module'
 import { TestSubmissionsModule } from './test-submissions/test-submissions.module'
 import { LessonsModule } from './lessons/lessons.module'
+import { LexiconModule } from './lexicon/lexicon.module'
 import { VocabularyModule } from './vocabulary/vocabulary.module'
 import { CollocationsModule } from './collocations/collocations.module'
 import { LinkingModule } from './linking/linking.module'
@@ -33,6 +34,7 @@ import { PricingModule } from './pricing/pricing.module'
     TestsModule,
     TestSubmissionsModule,
     LessonsModule,
+    LexiconModule,
     VocabularyModule,
     CollocationsModule,
     LinkingModule,

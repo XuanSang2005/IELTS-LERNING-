@@ -23,6 +23,15 @@ export class User {
 
   @Prop({ type: Object, required: true })
   profile!: UserProfile
+
+  /**
+   * IANA timezone string (e.g. 'Asia/Ho_Chi_Minh'). Detected from the browser
+   * on first login and stored to compute consistent "today" boundaries for
+   * the SRS daily queue across devices. Defaults to UTC if detection fails.
+   * Plan Decision #13.
+   */
+  @Prop({ type: String, default: 'UTC' })
+  userTimezone!: string
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)

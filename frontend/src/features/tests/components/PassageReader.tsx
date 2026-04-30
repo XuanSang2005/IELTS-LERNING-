@@ -11,7 +11,7 @@ export function PassageReader({ passage }: PassageReaderProps) {
         {passage.title}
       </h2>
       <div
-        className="mt-6 space-y-5 font-fraunces text-[20px] leading-[1.65] text-ink [&_em]:italic [&_strong]:text-claret [&_strong]:font-medium"
+        className="mt-6 space-y-5 font-fraunces text-[17px] leading-[1.7] text-ink md:text-[19px] md:leading-[1.65] lg:text-[20px] [&_em]:italic [&_strong]:text-claret [&_strong]:font-medium"
         dangerouslySetInnerHTML={{ __html: passage.bodyHtml }}
       />
     </article>

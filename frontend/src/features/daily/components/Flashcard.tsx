@@ -25,7 +25,7 @@ export function Flashcard({ eyebrow, front, back, revealed, onReveal, rating }: 
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      className="border border-line bg-ivory p-8 shadow-[0_8px_28px_-12px_rgba(20,18,16,0.18)] md:p-12"
+      className="border border-line bg-ivory p-5 shadow-[0_8px_28px_-12px_rgba(20,18,16,0.18)] sm:p-8 md:p-12"
     >
       <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-claret">{eyebrow}</p>
 

@@ -14,6 +14,15 @@ const PATTERN_LABEL: Record<CollocationPattern, string> = {
   'verb-preposition': 'V + PREP',
   'adjective-preposition': 'ADJ + PREP',
   'adverb-adjective': 'ADV + ADJ',
+  'verb-adverb': 'V + ADV',
+  verb: 'V CHUNK',
+  'noun-adjective': 'N + ADJ',
+  'verb-adjective': 'V + ADJ',
+  'noun-preposition': 'N + PREP',
+  preposition: 'PREP CHUNK',
+  'adverb-verb': 'ADV + V',
+  noun: 'N CHUNK',
+  adjective: 'ADJ CHUNK',
 }
 
 function entryNumeral(n: number): string {

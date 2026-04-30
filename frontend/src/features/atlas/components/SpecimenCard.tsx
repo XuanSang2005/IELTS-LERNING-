@@ -63,11 +63,11 @@ export function SpecimenCard({ specimen, index = 0 }: SpecimenCardProps) {
       className="relative border border-line bg-bone p-6 md:p-8"
     >
       {/* Eyebrow: plate number left, family + freq + band cost right */}
-      <header className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-line pb-4">
-        <p className="font-mono text-[13px] uppercase tracking-[0.25em] text-claret">
+      <header className="flex flex-col gap-3 border-b border-line pb-4 sm:flex-row sm:flex-wrap sm:items-baseline sm:justify-between sm:gap-x-6 sm:gap-y-2">
+        <p className="font-mono text-[12px] uppercase tracking-[0.25em] text-claret md:text-[13px]">
           {formatPlate(specimen.plate)}
         </p>
-        <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 font-mono text-[11px] uppercase tracking-[0.22em] text-graphite">
+        <div className="flex flex-col gap-1 font-mono text-[10px] uppercase tracking-[0.22em] text-graphite sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-5 md:text-[11px]">
           <span>
             FAMILY {family.numeral.replace('VOL. ', '')} <span className="text-line">·</span>{' '}
             <span className="text-ink">{family.name}</span>

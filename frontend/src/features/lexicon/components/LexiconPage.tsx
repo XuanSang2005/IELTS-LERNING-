@@ -1,78 +1,42 @@
-import { useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
 import { useNavigate } from '@tanstack/react-router'
-import type { Collocation } from '@shared/schemas/collocation'
 import type { LexiconDiscipline } from '@shared/schemas/lexicon'
-import type { LinkingDevice } from '@shared/schemas/linking-device'
-import type { VocabWord } from '@shared/schemas/vocabulary'
 import { Polaroid } from '@/components/ui/Polaroid'
-import { Route as VocabularyRoute } from '@/routes/app.vocabulary'
+import { Route as LexiconIndexRoute } from '@/routes/app.lexicon.index'
+import { useLexiconDiscipline } from '@/stores/lexicon-discipline-store'
+import { useLexiconLevel } from '@/stores/lexicon-level-store'
 import { DISCIPLINE_CONFIG } from '../data/discipline-config'
-import {
-  useCollocations,
-  useLinking,
-  useVocabulary,
-  type CollocationsFilter,
-  type LinkingFilter,
-  type VocabularyFilter,
-} from '../hooks/lexicon-queries'
 import { DisciplineNav } from './DisciplineNav'
-import { VocabularyEntry } from './VocabularyEntry'
-import { CollocationEntry } from './CollocationEntry'
-import { LinkingEntry } from './LinkingEntry'
+import { LexiconLevelSelector } from './LexiconLevelSelector'
+import { LexiconRoadmap } from './LexiconRoadmap'
+import { RetentionPanel } from './RetentionPanel'
 
 export function LexiconPage() {
-  const search = VocabularyRoute.useSearch()
+  const search = LexiconIndexRoute.useSearch()
   const navigate = useNavigate()
-  const active: LexiconDiscipline = search.discipline ?? 'vocabulary'
+  const persistedActive = useLexiconDiscipline((s) => s.active)
+  const setPersistedActive = useLexiconDiscipline((s) => s.setActive)
 
-  // Free-text search is the only filter exposed in the UI.
-  const [q, setQ] = useState('')
+  // URL search param wins; falls back to persisted store choice.
+  const active: LexiconDiscipline = search.discipline ?? persistedActive
 
-  const config = DISCIPLINE_CONFIG[active]
+  const levelByDiscipline = useLexiconLevel((s) => s.byDiscipline)
+  const setLevel = useLexiconLevel((s) => s.setLevel)
+  const level = levelByDiscipline[active]
 
   function setActive(next: LexiconDiscipline) {
+    setPersistedActive(next)
     void navigate({
-      to: '/app/vocabulary',
+      to: '/app/lexicon',
       search: next === 'vocabulary' ? {} : { discipline: next },
       replace: true,
     })
   }
 
-  // Build per-discipline filters. Memoised so query keys don't churn.
-  const vocabFilter = useMemo<VocabularyFilter>(() => {
-    const f: VocabularyFilter = {}
-    if (q.trim()) f.q = q.trim()
-    return f
-  }, [q])
-
-  const collocationsFilter = useMemo<CollocationsFilter>(() => {
-    const f: CollocationsFilter = {}
-    if (q.trim()) f.q = q.trim()
-    return f
-  }, [q])
-
-  const linkingFilterValue = useMemo<LinkingFilter>(() => {
-    const f: LinkingFilter = {}
-    if (q.trim()) f.q = q.trim()
-    return f
-  }, [q])
-
-  // Only the active discipline's query is `enabled` — keeps the network quiet.
-  const vocabQuery = useVocabulary(vocabFilter, active === 'vocabulary')
-  const collocationsQuery = useCollocations(collocationsFilter, active === 'collocations')
-  const linkingQuery = useLinking(linkingFilterValue, active === 'linking')
-
-  const activeQuery =
-    active === 'vocabulary'
-      ? vocabQuery
-      : active === 'collocations'
-        ? collocationsQuery
-        : linkingQuery
+  const config = DISCIPLINE_CONFIG[active]
 
   return (
     <div className="w-full pb-20">
-      {/* ── Masthead ───────────────────────────────────────────────────────── */}
+      {/* Masthead */}
       <header className="border-b-2 border-line">
         <div className="mx-auto grid w-full max-w-[1720px] grid-cols-1 items-center gap-10 px-6 pb-16 pt-11 md:grid-cols-12 md:gap-14 md:px-10 xl:px-14">
           <div className="md:col-span-7">
@@ -80,7 +44,7 @@ export function LexiconPage() {
               <span className="mr-2 text-claret">◆</span>
               <span className="text-claret">THE LEXICON</span>
               <span className="mx-2 text-graphite">·</span>
-              <span className="text-graphite">{config.metaSuffix}</span>
+              <span className="text-graphite">WEEKS I — XII · FOUR LEVELS</span>
             </p>
             <h1 className="mt-5 font-fraunces text-[clamp(52px,6.4vw,88px)] font-normal leading-[0.95] tracking-[-0.02em] text-ink">
               {config.headline}
@@ -105,106 +69,66 @@ export function LexiconPage() {
         </div>
       </header>
 
+      {/* Discipline switcher row */}
       <div className="mx-auto w-full max-w-[1720px] px-6 md:px-10 xl:px-14">
-        {/* ── Single control row: DISCIPLINE + SEARCH + count ──────────── */}
-        <div className="flex flex-wrap items-center gap-x-8 gap-y-5 border-b border-line py-7 md:py-8">
+        <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-5 border-b border-line py-7 md:py-8">
           <DisciplineNav active={active} onChange={setActive} />
-
-          <div className="flex flex-1 items-center gap-3">
-            <span className="font-mono text-[11px] uppercase tracking-[0.28em] text-graphite">
-              SEARCH
-            </span>
-            <input
-              type="search"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="phrase, headword, or alternative…"
-              className="w-full max-w-[520px] border-b border-line bg-transparent py-2 font-fraunces text-[20px] italic text-ink placeholder:text-graphite/60 focus:border-ink focus:outline-none md:text-[22px]"
-            />
-          </div>
-
-          <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-graphite">
-            {activeQuery.data ? `${activeQuery.data.length} ${config.unitLabel}` : ''}
+          <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-graphite">
+            CADENCE · 10 NEW WORDS / 7 PAIRINGS / 2 CONNECTORS PER DAY
           </p>
         </div>
-
-        {/* ── Body ────────────────────────────────────────────────────────── */}
-        <Body active={active} config={config} query={activeQuery} />
       </div>
+
+      <LexiconLevelSelector value={level} onChange={(next) => setLevel(active, next)} />
+
+      {/* Colophon */}
+      <section className="border-b border-line">
+        <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-6 px-6 py-14 text-center md:px-10 md:py-16 xl:px-14">
+          <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-claret">
+            ◆ THE TWELVE-WEEK ARC · {DISCIPLINE_LABEL[active].toUpperCase()}
+          </p>
+          <div className="max-w-[62ch] font-fraunces text-[20px] leading-relaxed text-ink md:text-[22px]">
+            <p>
+              Twelve themes, four phases. Each week opens seven daily lessons. Items move through a
+              five-box review schedule — every word you meet returns until your hand finds it without
+              looking.
+            </p>
+            <p className="mt-4 font-geist text-[16px] leading-relaxed text-graphite">
+              Three doors per day. Lesson presents the items. Practice is active recall — definitions,
+              gap-fills, synonym matches. Review is the spaced-repetition queue, surfaced from
+              everything you have ever introduced.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <LexiconRoadmap discipline={active} level={level} />
+
+      {/* Retention metrics — folded under the roadmap so it's visible without
+          a click-through but doesn't compete with the editorial masthead. */}
+      <section className="border-t border-line">
+        <div className="mx-auto w-full max-w-[1720px] px-6 py-12 md:px-10 md:py-14 xl:px-14">
+          <RetentionPanel discipline={active} />
+        </div>
+      </section>
+
+      <footer className="border-t-2 border-line">
+        <div className="mx-auto flex max-w-7xl flex-col items-center px-6 py-14 text-center md:px-10 md:py-16 xl:px-14">
+          <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-claret">
+            ◆ A NOTE ON PACE
+          </p>
+          <p className="mt-5 max-w-[62ch] font-fraunces text-[19px] italic leading-relaxed text-graphite md:text-[21px]">
+            Ten new words a day — when you keep up with review. Slip a day, and the queue catches up
+            with you; the library will quietly pause new intake until you are level again.
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }
 
-/* ──────────────────────────────────────────────────────────────────────── */
-/* Body — switches the entry renderer per discipline. Pulled out of the    */
-/* page component so the loading/error/empty states are written once.      */
-/* ──────────────────────────────────────────────────────────────────────── */
-
-interface BodyProps {
-  active: LexiconDiscipline
-  config: { emptyState: string }
-  query: {
-    data?: unknown[]
-    isPending: boolean
-    isError: boolean
-  }
+const DISCIPLINE_LABEL: Record<LexiconDiscipline, string> = {
+  vocabulary: 'Vocabulary',
+  collocations: 'Collocations',
+  linking: 'Linking devices',
 }
-
-function Body({ active, config, query }: BodyProps) {
-  if (query.isPending) {
-    return (
-      <motion.p
-        animate={{ opacity: [0.4, 1, 0.4] }}
-        transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-        className="mt-14 font-fraunces text-[30px] italic text-graphite md:text-[34px]"
-      >
-        Opening the lexicon…
-      </motion.p>
-    )
-  }
-
-  if (query.isError) {
-    return (
-      <p className="mt-14 font-fraunces text-[24px] italic text-claret md:text-[26px]">
-        The lexicon is momentarily out of reach. Please refresh.
-      </p>
-    )
-  }
-
-  if (!query.data || query.data.length === 0) {
-    return (
-      <p className="mt-14 font-fraunces text-[24px] italic text-graphite md:text-[26px]">
-        {config.emptyState}
-      </p>
-    )
-  }
-
-  if (active === 'vocabulary') {
-    return (
-      <div>
-        {(query.data as VocabWord[]).map((w, i) => (
-          <VocabularyEntry key={w.id} word={w} index={i} />
-        ))}
-      </div>
-    )
-  }
-
-  if (active === 'collocations') {
-    return (
-      <div>
-        {(query.data as Collocation[]).map((c, i) => (
-          <CollocationEntry key={c.id} item={c} index={i} />
-        ))}
-      </div>
-    )
-  }
-
-  return (
-    <div>
-      {(query.data as LinkingDevice[]).map((d, i) => (
-        <LinkingEntry key={d.id} item={d} index={i} />
-      ))}
-    </div>
-  )
-}
-

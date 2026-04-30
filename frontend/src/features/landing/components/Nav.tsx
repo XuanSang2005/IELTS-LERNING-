@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
+import { MobileMenuSheet } from '@/components/MobileMenuSheet'
+import { MobileMenuTrigger } from '@/components/MobileMenuTrigger'
 import { useAuthStore } from '@/stores/auth-store'
 import { logout } from '@/lib/auth'
 
@@ -19,6 +21,7 @@ export function Nav({ minimal = false }: { minimal?: boolean } = {}) {
   const navigate = useNavigate()
 
   const [menuOpen, setMenuOpen] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -102,7 +105,7 @@ export function Nav({ minimal = false }: { minimal?: boolean } = {}) {
 
         {/* Auth CTAs — signed-out shows Log in + Sign up; signed-in shows Dashboard + avatar (minimal mode hides the dashboard button) */}
         {isAuthed ? (
-          <div className="flex shrink-0 items-center gap-5 md:gap-7" ref={menuRef}>
+          <div className="hidden shrink-0 items-center gap-5 md:gap-7 lg:flex" ref={menuRef}>
             {!minimal && (
               <Link
                 to="/app"
@@ -166,7 +169,7 @@ export function Nav({ minimal = false }: { minimal?: boolean } = {}) {
             </div>
           </div>
         ) : (
-          <div className="flex shrink-0 items-center gap-6 md:gap-10">
+          <div className="hidden shrink-0 items-center gap-6 md:gap-10 lg:flex">
             <Link
               to="/login"
               className="group relative font-geist text-[20px] font-medium text-ink md:text-[22px] xl:text-[24px]"
@@ -182,7 +185,119 @@ export function Nav({ minimal = false }: { minimal?: boolean } = {}) {
             </Link>
           </div>
         )}
+
+        <MobileMenuTrigger
+          open={mobileOpen}
+          onClick={() => setMobileOpen((v) => !v)}
+          controlsId="public-mobile-menu"
+        />
       </div>
+
+      <MobileMenuSheet
+        id="public-mobile-menu"
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        eyebrow={isAuthed ? `${displayName} · ${user?.isPro ? 'PRO' : 'FREE'}` : 'NAVIGATION'}
+        footer={
+          isAuthed ? (
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="block w-full text-left font-geist text-[18px] text-claret active:opacity-70"
+            >
+              Sign out
+            </button>
+          ) : (
+            <div className="flex flex-col gap-3">
+              <Link
+                to="/login"
+                onClick={() => setMobileOpen(false)}
+                className="block border border-ink px-5 py-3 text-center font-geist text-[16px] font-medium text-ink transition-colors duration-200 hover:bg-ink hover:text-ivory active:bg-ink/10"
+              >
+                Log in
+              </Link>
+              <Link
+                to="/signup"
+                onClick={() => setMobileOpen(false)}
+                className="group relative inline-flex items-center justify-center gap-3 overflow-hidden bg-ink-warm px-6 py-3.5 text-center font-geist text-[12px] font-medium uppercase tracking-[0.22em] text-ivory transition-all duration-300 hover:bg-ink active:bg-ink"
+              >
+                <span className="absolute inset-x-0 bottom-0 h-[2px] bg-claret" />
+                <span className="relative z-10">Begin your assessment</span>
+                <span className="relative z-10 text-[13px] text-claret">→</span>
+              </Link>
+            </div>
+          )
+        }
+      >
+        {!minimal && (
+          <ul className="flex flex-col">
+            {NAV_ITEMS.map((item) => {
+              const isActive = item.to ? pathname === item.to : false
+              const itemClass = `group relative block w-full py-4 font-fraunces text-[26px] leading-tight text-ink transition-colors active:text-claret ${isActive ? 'text-claret' : ''}`
+              return (
+                <li key={item.label} className="border-b border-line last:border-b-0">
+                  {item.to ? (
+                    <Link to={item.to} onClick={() => setMobileOpen(false)} className={itemClass}>
+                      {item.label}
+                      <span
+                        className={`absolute -bottom-px left-0 bg-claret transition-all duration-200 ${isActive ? 'h-[2px] w-12' : 'h-px w-0 group-hover:w-12'}`}
+                      />
+                    </Link>
+                  ) : (
+                    <a
+                      href={item.hash}
+                      onClick={() => setMobileOpen(false)}
+                      className={itemClass}
+                    >
+                      {item.label}
+                      <span className="absolute -bottom-px left-0 h-px w-0 bg-claret transition-all duration-200 group-hover:w-12" />
+                    </a>
+                  )}
+                </li>
+              )
+            })}
+          </ul>
+        )}
+
+        {isAuthed && (
+          <div className={!minimal ? 'mt-8 border-t border-line pt-6' : ''}>
+            <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.28em] text-graphite">
+              ◆ ACCOUNT
+            </p>
+            <ul className="flex flex-col gap-1">
+              {!minimal && (
+                <li>
+                  <Link
+                    to="/app"
+                    onClick={() => setMobileOpen(false)}
+                    className="block py-3 font-fraunces text-[22px] text-ink active:text-claret"
+                  >
+                    Enter dashboard
+                  </Link>
+                </li>
+              )}
+              <li>
+                <Link
+                  to="/profile"
+                  onClick={() => setMobileOpen(false)}
+                  className="block py-3 font-geist text-[18px] text-ink active:text-claret"
+                >
+                  Profile & settings
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/pricing"
+                  onClick={() => setMobileOpen(false)}
+                  className="block py-3 font-geist text-[18px] text-ink active:text-claret"
+                >
+                  Billing & membership
+                </Link>
+              </li>
+            </ul>
+          </div>
+        )}
+      </MobileMenuSheet>
     </nav>
   )
 }

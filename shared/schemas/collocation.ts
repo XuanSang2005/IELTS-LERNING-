@@ -12,6 +12,15 @@ export const CollocationPatternSchema = z.enum([
   'verb-preposition', // depend on, refer to
   'adjective-preposition', // aware of, prone to
   'adverb-adjective', // highly effective, deeply concerned
+  'verb-adverb', // reply promptly, multitask effectively
+  'verb', // get promoted, fall ill — verb chunks
+  'noun-adjective', // free and fair, slightly more permissive
+  'verb-adjective', // remain stable, stay active
+  'noun-preposition', // freedom of speech, right to vote
+  'preposition', // in stark contrast, compared with — multi-word prepositional phrases
+  'adverb-verb', // closely resemble, simultaneously occurred
+  'noun', // global village, world peace — fixed noun phrases
+  'adjective', // free and fair — adjective chunks
 ])
 export type CollocationPattern = z.infer<typeof CollocationPatternSchema>
 

@@ -180,7 +180,7 @@ function ListeningReadingRunner({ test, mode }: TestRunnerProps) {
     activePart && 'wordCount' in activePart ? activePart.wordCount : null
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-ivory">
+    <div className="flex h-svh flex-col overflow-hidden bg-ivory supports-[height:100dvh]:h-dvh">
       <header className="shrink-0 border-b border-line bg-ivory">
         <div className="flex w-full items-center justify-between gap-4 px-6 py-3 md:px-10 xl:px-14">
           <div className="min-w-0 flex-1">
@@ -391,7 +391,7 @@ function ReadingBody({
   return (
     <div className="flex h-full w-full flex-col px-6 pt-8 md:px-10 xl:px-14">
       {/* Mobile tabs */}
-      <div className="mb-6 flex shrink-0 border-b border-line lg:hidden">
+      <div className="mb-6 flex shrink-0 border-b border-line md:hidden">
         {(['passage', 'questions'] as const).map((t) => (
           <button
             key={t}
@@ -408,14 +408,14 @@ function ReadingBody({
         ))}
       </div>
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-20 xl:gap-28">
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 md:gap-10 lg:grid-cols-2 lg:gap-20 xl:gap-28">
         <section
-          className={`${mobileTab === 'passage' ? 'block' : 'hidden'} lg:block lg:overflow-y-auto lg:pb-8 lg:pr-6`}
+          className={`${mobileTab === 'passage' ? 'block' : 'hidden'} overflow-y-auto pb-6 md:block md:pr-4 lg:pb-8 lg:pr-6`}
         >
           <PassageReader passage={activePassage} />
         </section>
         <section
-          className={`${mobileTab === 'questions' ? 'block' : 'hidden'} lg:block lg:overflow-y-auto lg:pb-8 lg:pl-6`}
+          className={`${mobileTab === 'questions' ? 'block' : 'hidden'} overflow-y-auto pb-6 md:block md:pl-4 lg:pb-8 lg:pl-6`}
         >
           {activeGroup && (
             <div>

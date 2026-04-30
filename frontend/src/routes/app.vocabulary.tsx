@@ -1,13 +1,16 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { z } from 'zod'
-import { LexiconDisciplineSchema } from '@shared/schemas/lexicon'
-import { LexiconPage } from '@/features/lexicon/components/LexiconPage'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
-const searchSchema = z.object({
-  discipline: LexiconDisciplineSchema.optional(),
-})
-
+/**
+ * Backward-compat redirect. `/app/vocabulary` was the old single-page Lexicon
+ * route. Plan Decision #10 makes `/app/lexicon` the canonical home and keeps
+ * this URL working for any links cached in Daily emails or external bookmarks.
+ */
 export const Route = createFileRoute('/app/vocabulary')({
-  component: LexiconPage,
-  validateSearch: searchSchema,
+  beforeLoad: () => {
+    throw redirect({
+      to: '/app/lexicon',
+      search: { discipline: 'vocabulary' },
+      replace: true,
+    })
+  },
 })

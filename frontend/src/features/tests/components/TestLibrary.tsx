@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import type { Test } from '@shared/schemas/test'
+import type { Skill, Test } from '@shared/schemas/test'
 import { useTestsQuery } from '@/features/tests/hooks/useTestsQuery'
 import { Polaroid } from '@/components/ui/Polaroid'
 import { FilterBar, type TestFilters } from './FilterBar'
@@ -11,6 +11,13 @@ const DEFAULT_FILTERS: TestFilters = {
   difficulty: 'all',
   includePro: true,
 }
+
+const SKILL_COLUMNS: Array<{ skill: Skill; numeral: string; label: string }> = [
+  { skill: 'listening', numeral: 'I', label: 'Listening' },
+  { skill: 'reading', numeral: 'II', label: 'Reading' },
+  { skill: 'writing', numeral: 'III', label: 'Writing' },
+  { skill: 'speaking', numeral: 'IV', label: 'Speaking' },
+]
 
 function matches(test: Test, f: TestFilters): boolean {
   if (f.skill !== 'all' && test.skill !== f.skill) return false
@@ -24,6 +31,17 @@ export function TestLibrary() {
   const [filters, setFilters] = useState<TestFilters>(DEFAULT_FILTERS)
 
   const visible = useMemo(() => tests.filter((t) => matches(t, filters)), [tests, filters])
+
+  const bySkill = useMemo(() => {
+    const buckets: Record<Skill, Test[]> = {
+      listening: [],
+      reading: [],
+      writing: [],
+      speaking: [],
+    }
+    for (const t of visible) buckets[t.skill].push(t)
+    return buckets
+  }, [visible])
 
   return (
     <div>
@@ -68,11 +86,49 @@ export function TestLibrary() {
           <p className="py-16 text-center font-fraunces text-[24px] italic text-graphite">
             The library is quiet here. Try another filter.
           </p>
+        ) : filters.skill !== 'all' ? (
+          (() => {
+            const meta = SKILL_COLUMNS.find((s) => s.skill === filters.skill)
+            return (
+              <div>
+                {meta && (
+                  <header className="mb-8 border-b border-line pb-4">
+                    <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.28em] text-claret">
+                      № {meta.numeral} · {visible.length}{' '}
+                      {visible.length === 1 ? 'PAPER' : 'PAPERS'}
+                    </p>
+                    <h2 className="mt-2 font-fraunces text-[28px] leading-tight text-ink md:text-[34px]">
+                      {meta.label}
+                    </h2>
+                  </header>
+                )}
+                <div className="grid auto-rows-fr grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {visible.map((t, i) => (
+                    <TestCard key={t.id} test={t} index={i} />
+                  ))}
+                </div>
+              </div>
+            )
+          })()
         ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {visible.map((t, i) => (
-              <TestCard key={t.id} test={t} index={i} />
-            ))}
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {SKILL_COLUMNS.map(({ skill }) => {
+              const items = bySkill[skill]
+              return items.length === 0 ? (
+                <p
+                  key={skill}
+                  className="py-8 text-center font-fraunces text-[17px] italic text-graphite"
+                >
+                  No papers in this discipline.
+                </p>
+              ) : (
+                <div key={skill} className="grid auto-rows-fr grid-cols-1 gap-5">
+                  {items.map((t, i) => (
+                    <TestCard key={t.id} test={t} index={i} />
+                  ))}
+                </div>
+              )
+            })}
           </div>
         )}
       </section>

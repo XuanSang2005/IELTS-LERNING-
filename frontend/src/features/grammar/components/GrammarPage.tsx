@@ -48,7 +48,7 @@ export function GrammarPage() {
 
       {/* Colophon — how the twelve weeks run */}
       <section className="border-b border-line">
-        <div className="mx-auto grid w-full max-w-[1280px] grid-cols-1 gap-10 px-6 py-14 md:grid-cols-[180px_1fr] md:gap-14 md:px-10 md:py-16 xl:px-14">
+        <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-6 px-6 py-14 text-center md:px-10 md:py-16 xl:px-14">
           <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-claret">
             ◆ THE TWELVE-WEEK ARC
           </p>
@@ -72,7 +72,7 @@ export function GrammarPage() {
 
       {/* Footer */}
       <footer className="border-t-2 border-line">
-        <div className="mx-auto max-w-[1280px] px-6 py-14 md:px-10 md:py-16 xl:px-14">
+        <div className="mx-auto flex max-w-7xl flex-col items-center px-6 py-14 text-center md:px-10 md:py-16 xl:px-14">
           <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-claret">
             ◆ A NOTE ON PACE
           </p>

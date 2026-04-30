@@ -55,7 +55,7 @@ function Chip({
 
 export function FilterBar({ value, onChange }: FilterBarProps) {
   return (
-    <div className="sticky top-[88px] z-30 border-y border-line bg-ivory py-4">
+    <div className="sticky top-[64px] z-30 border-y border-line bg-ivory py-3 md:top-[88px] md:py-4">
       <div className="mx-auto flex w-full max-w-[1720px] flex-wrap items-center gap-x-8 gap-y-3 px-6 md:px-10 xl:px-14">
         <div className="flex items-center gap-3">
           <p className="font-mono text-[12px] uppercase tracking-[0.25em] text-graphite">SKILL</p>

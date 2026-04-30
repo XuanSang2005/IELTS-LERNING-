@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
+import { MobileMenuSheet } from '@/components/MobileMenuSheet'
+import { MobileMenuTrigger } from '@/components/MobileMenuTrigger'
 import { useProfile } from '@/features/practice/hooks/practice-queries'
 import { useAuthStore } from '@/stores/auth-store'
 import { logout } from '@/lib/auth'
@@ -7,7 +9,7 @@ import { logout } from '@/lib/auth'
 const LINKS = [
   { label: 'Dashboard', to: '/app' as const, exactMatch: true },
   { label: 'Test', to: '/tests' as const, exactMatch: false },
-  { label: 'Lexicon', to: '/app/vocabulary' as const, exactMatch: true },
+  { label: 'Lexicon', to: '/app/lexicon' as const, exactMatch: false },
   { label: 'Grammar', to: '/app/grammar' as const, exactMatch: true },
 ] as const
 
@@ -33,6 +35,7 @@ export function AppNav() {
     .toUpperCase()
 
   const [menuOpen, setMenuOpen] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -86,7 +89,7 @@ export function AppNav() {
           )}
         </Link>
 
-        {/* Center links */}
+        {/* Center links — desktop only */}
         <div className="hidden flex-1 items-center justify-center gap-8 lg:flex xl:gap-12">
           {LINKS.map((item) => {
             const active = isLinkActive(item)
@@ -109,8 +112,8 @@ export function AppNav() {
           })}
         </div>
 
-        {/* Avatar dropdown */}
-        <div className="relative shrink-0" ref={menuRef}>
+        {/* Avatar dropdown — desktop only */}
+        <div className="relative hidden shrink-0 lg:block" ref={menuRef}>
           <button
             type="button"
             onClick={() => setMenuOpen((v) => !v)}
@@ -164,7 +167,75 @@ export function AppNav() {
             </div>
           )}
         </div>
+
+        <MobileMenuTrigger
+          open={mobileOpen}
+          onClick={() => setMobileOpen((v) => !v)}
+          controlsId="app-mobile-menu"
+        />
       </div>
+
+      <MobileMenuSheet
+        id="app-mobile-menu"
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        eyebrow={`${displayName.toUpperCase()} · ${statusLabel.split(' · ')[0]}`}
+        footer={
+          <button
+            type="button"
+            onClick={handleSignOut}
+            className="block w-full text-left font-geist text-[18px] text-claret active:opacity-70"
+          >
+            Sign out
+          </button>
+        }
+      >
+        <ul className="flex flex-col">
+          {LINKS.map((item) => {
+            const active = isLinkActive(item)
+            return (
+              <li key={item.label} className="border-b border-line last:border-b-0">
+                <Link
+                  to={item.to}
+                  onClick={() => setMobileOpen(false)}
+                  className={`group relative block w-full py-4 font-fraunces text-[26px] leading-tight text-ink transition-colors active:text-claret ${active ? 'text-claret' : ''}`}
+                >
+                  {item.label}
+                  <span
+                    className={`absolute -bottom-px left-0 bg-claret transition-all duration-200 ${active ? 'h-[2px] w-12' : 'h-px w-0 group-hover:w-12'}`}
+                  />
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+
+        <div className="mt-8 border-t border-line pt-6">
+          <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.28em] text-graphite">
+            ◆ ACCOUNT
+          </p>
+          <ul className="flex flex-col gap-1">
+            <li>
+              <Link
+                to="/profile"
+                onClick={() => setMobileOpen(false)}
+                className="block py-3 font-geist text-[18px] text-ink active:text-claret"
+              >
+                Profile & settings
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/pricing"
+                onClick={() => setMobileOpen(false)}
+                className="block py-3 font-geist text-[18px] text-ink active:text-claret"
+              >
+                Billing & membership
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </MobileMenuSheet>
     </nav>
   )
 }

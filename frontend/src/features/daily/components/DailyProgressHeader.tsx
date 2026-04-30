@@ -96,13 +96,13 @@ export function DailyProgressHeader({
                 § {ROMAN[n]}
               </span>
               <span
-                className={`font-fraunces text-[clamp(20px,2vw,28px)] leading-tight ${titleTone} ${
+                className={`hidden font-fraunces text-[clamp(20px,2vw,28px)] leading-tight sm:block ${titleTone} ${
                   isCurrent ? 'italic' : ''
                 }`}
               >
                 {step.title}
               </span>
-              <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-graphite">
+              <span className="hidden font-mono text-[10px] uppercase tracking-[0.25em] text-graphite sm:block">
                 {stepMinutes[step.kind]} MIN
               </span>
             </button>

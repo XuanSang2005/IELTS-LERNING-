@@ -48,7 +48,7 @@ export function Step2Reading({ reading, onAdvance, onPrev }: Step2ReadingProps) 
       onPrev={onPrev}
       footnote={footnote}
     >
-      <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-14">
+      <div className="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-10 lg:grid-cols-12 lg:gap-14">
         {/* Passage */}
         <section className="lg:col-span-7">
           <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-graphite">

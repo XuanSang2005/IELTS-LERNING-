@@ -134,7 +134,6 @@ export function DailyPage() {
               {activeNumber === 4 && (
                 <Step4Vocab
                   key="step-4"
-                  deck={today.data?.vocabDeck}
                   onAdvance={() => void handleAdvance()}
                   onPrev={handlePrev ?? (() => goToStep(3))}
                 />

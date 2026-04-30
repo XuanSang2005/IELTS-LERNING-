@@ -117,7 +117,7 @@ export function QuestionRenderer({
             {question.items.map((item) => (
               <div
                 key={item.id}
-                className="grid grid-cols-1 items-center gap-3 md:grid-cols-[1fr_220px]"
+                className="grid grid-cols-1 items-center gap-3 md:grid-cols-[1fr_180px] lg:grid-cols-[1fr_220px]"
               >
                 <span className="font-fraunces text-[19px] leading-relaxed text-ink">
                   {item.text}

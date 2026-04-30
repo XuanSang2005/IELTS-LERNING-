@@ -32,19 +32,19 @@ export function PhasesRoadmap({ level }: PhasesRoadmapProps) {
                   {phase.weekRange}
                 </p>
               </div>
-              <p className="max-w-[58ch] font-fraunces text-[18px] italic leading-relaxed text-graphite md:text-[20px]">
+              <p className="font-fraunces text-[18px] italic leading-relaxed whitespace-nowrap text-graphite md:mt-11 md:text-[20px]">
                 {phase.description}
               </p>
             </div>
 
             {/* Week tiles */}
             <div
-              className={`mt-10 grid gap-6 md:mt-14 md:gap-8 ${
+              className={`mt-10 grid grid-cols-1 gap-6 md:mt-14 md:gap-8 ${
                 weeks.length === 1
                   ? 'md:grid-cols-1'
                   : weeks.length === 3
-                    ? 'md:grid-cols-3'
-                    : 'md:grid-cols-2 xl:grid-cols-4'
+                    ? 'sm:grid-cols-2 md:grid-cols-3'
+                    : 'sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
               }`}
             >
               {weeks.map((stub, i) => (
