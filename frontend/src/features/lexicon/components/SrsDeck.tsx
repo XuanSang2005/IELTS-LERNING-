@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import type { LexiconDiscipline } from '@shared/schemas/lexicon'
 import {
@@ -9,7 +9,6 @@ import {
 } from '@shared/schemas/lexicon-items'
 import type { BandLevel } from '@shared/schemas/practice'
 import type { ReviewRating, SrsCard } from '@shared/schemas/srs'
-import { useIntroduceMutation } from '../hooks/useIntroduceMutation'
 import { useReviewMutation } from '../hooks/useReviewMutation'
 import { useTodayQueue } from '../hooks/useTodayQueue'
 import { TodayQueueBanner } from './TodayQueueBanner'
@@ -19,24 +18,30 @@ interface SrsDeckProps {
   level: BandLevel
 }
 
-/** Combined queue entry — either an SRS card already due, or a fresh item. */
+/**
+ * Combined queue entry — either an SRS card already due, or a fresh item.
+ * Backend guarantees `item` is non-null for `due` entries (orphan cards are
+ * filtered server-side before the queue is returned).
+ */
 type DeckEntry =
   | { kind: 'new'; item: LexiconItem }
-  | { kind: 'due'; card: SrsCard; item: LexiconItem | null }
+  | { kind: 'due'; card: SrsCard; item: LexiconItem }
 
 /**
  * Canonical daily intake. Plan Decision #11 — this is the only path that
- * introduces SRS cards. Renders cards one at a time with Again / Good / Easy
- * buttons; throttle and pause state come from the backend's TodayQueue.
+ * introduces SRS cards. The backend's POST /review now auto-introduces a card
+ * if it doesn't exist, so the client only fires one mutation per rating.
  */
 export function SrsDeck({ discipline, level }: SrsDeckProps) {
   const queue = useTodayQueue(discipline, level)
-  const introduce = useIntroduceMutation({ discipline, level })
   const review = useReviewMutation({ discipline, level })
 
   const [revealed, setRevealed] = useState(false)
   const [activeIdx, setActiveIdx] = useState(0)
-  const [completedItemIds, setCompletedItemIds] = useState<Set<string>>(new Set())
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  // Debounce: ignore subsequent clicks within 400ms of the last accepted one,
+  // even if the mutation hasn't responded. Prevents double-fire on iOS taps.
+  const lastClickRef = useRef<number>(0)
 
   // Combine new + due into a single ordered deck. New items first so the
   // student gets fresh exposure before launching into the spaced reviews.
@@ -44,22 +49,12 @@ export function SrsDeck({ discipline, level }: SrsDeckProps) {
     if (!queue.data) return []
     const news: DeckEntry[] = queue.data.newItems.map((item) => ({ kind: 'new', item }))
     const dueItemsById = new Map(queue.data.dueItems.map((it) => [it.id, it]))
-    const dues: DeckEntry[] = queue.data.dueReviews.map((card) => ({
-      kind: 'due',
-      card,
-      item: dueItemsById.get(card.itemId) ?? null,
-    }))
+    const dues: DeckEntry[] = queue.data.dueReviews.flatMap((card) => {
+      const item = dueItemsById.get(card.itemId)
+      return item ? [{ kind: 'due' as const, card, item }] : []
+    })
     return [...news, ...dues]
   }, [queue.data])
-
-  // When a new item lands at activeIdx, idempotently create its SRS card.
-  useEffect(() => {
-    const entry = deck[activeIdx]
-    if (!entry || entry.kind !== 'new') return
-    if (completedItemIds.has(entry.item.id)) return
-    if (introduce.isPending) return
-    introduce.mutate({ itemId: entry.item.id })
-  }, [activeIdx, deck, introduce, completedItemIds])
 
   if (queue.isPending) {
     return (
@@ -70,10 +65,23 @@ export function SrsDeck({ discipline, level }: SrsDeckProps) {
   }
 
   if (queue.isError || !queue.data) {
+    const err = queue.error as { status?: number; message?: string } | null
+    const isNetwork = !err?.status // fetch threw before getting a response
     return (
-      <p className="py-16 text-center font-fraunces text-[24px] italic text-claret">
-        The queue is momentarily out of reach. Please refresh.
-      </p>
+      <div className="space-y-4 py-16 text-center">
+        <p className="font-fraunces text-[24px] italic text-claret">
+          {isNetwork
+            ? 'No connection to the library. Check your network.'
+            : "The queue is momentarily out of reach."}
+        </p>
+        <button
+          type="button"
+          onClick={() => queue.refetch()}
+          className="border-2 border-ink px-6 py-3 font-mono text-[11px] uppercase tracking-[0.28em] text-ink transition-colors hover:bg-ink hover:text-ivory"
+        >
+          Try again
+        </button>
+      </div>
     )
   }
 
@@ -102,17 +110,33 @@ export function SrsDeck({ discipline, level }: SrsDeckProps) {
 
   const active = deck[activeIdx]!
   const itemId = active.kind === 'new' ? active.item.id : active.card.itemId
-  const submitting = review.isPending
 
   function handleRate(rating: ReviewRating) {
-    if (submitting) return
+    const now = Date.now()
+    if (now - lastClickRef.current < 400) return
+    lastClickRef.current = now
+
+    // Optimistic advance — UI moves immediately, mutation fires in background.
+    // On error: rollback both index and reveal state so the user can retry.
+    setRevealed(false)
+    setActiveIdx((i) => i + 1)
+    setErrorMessage(null)
     review.mutate(
       { itemId, rating },
       {
-        onSuccess: () => {
-          setCompletedItemIds((prev) => new Set(prev).add(itemId))
-          setRevealed(false)
-          setActiveIdx((i) => i + 1)
+        onError: (err: unknown) => {
+          setActiveIdx((i) => Math.max(0, i - 1))
+          setRevealed(true)
+          const status = (err as { status?: number })?.status
+          if (status === 409) {
+            setErrorMessage(
+              'Daily new-item quota reached. Continue with reviews — new items resume tomorrow.',
+            )
+          } else if (status === 401) {
+            setErrorMessage('Your session has closed. Please sign in again.')
+          } else {
+            setErrorMessage('Could not save that review. Tap a rating to retry.')
+          }
         },
       },
     )
@@ -138,14 +162,14 @@ export function SrsDeck({ discipline, level }: SrsDeckProps) {
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
         className="border border-line bg-ivory p-6 md:p-10"
       >
-        {active.kind === 'new' ? (
-          <NewCardBody item={active.item} revealed={revealed} />
-        ) : active.item ? (
-          <NewCardBody item={active.item} revealed={revealed} />
-        ) : (
-          <DueCardBody itemId={itemId} card={active.card} revealed={revealed} />
-        )}
+        <NewCardBody item={active.item} revealed={revealed} />
       </motion.article>
+
+      {errorMessage && (
+        <p className="border-l-2 border-claret bg-claret/5 px-4 py-3 font-fraunces text-[15px] italic text-claret">
+          {errorMessage}
+        </p>
+      )}
 
       {!revealed ? (
         <button
@@ -157,9 +181,9 @@ export function SrsDeck({ discipline, level }: SrsDeckProps) {
         </button>
       ) : (
         <div className="grid grid-cols-3 gap-3">
-          <RatingButton label="Again" tone="claret" disabled={submitting} onClick={() => handleRate('again')} />
-          <RatingButton label="Good" tone="ink" disabled={submitting} onClick={() => handleRate('good')} />
-          <RatingButton label="Easy" tone="sage" disabled={submitting} onClick={() => handleRate('easy')} />
+          <RatingButton label="Again" tone="claret" disabled={false} onClick={() => handleRate('again')} />
+          <RatingButton label="Good" tone="ink" disabled={false} onClick={() => handleRate('good')} />
+          <RatingButton label="Easy" tone="sage" disabled={false} onClick={() => handleRate('easy')} />
         </div>
       )}
     </div>
@@ -258,23 +282,3 @@ function NewCardBody({ item, revealed }: { item: LexiconItem; revealed: boolean 
   )
 }
 
-function DueCardBody({ itemId, card, revealed }: { itemId: string; card: SrsCard; revealed: boolean }) {
-  return (
-    <div>
-      <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-graphite">
-        DUE · {card.discipline.toUpperCase()}
-        <span className="mx-2 text-line">·</span>
-        <span className="text-claret">{card.totalReviews} REVIEW{card.totalReviews === 1 ? '' : 'S'}</span>
-      </p>
-      <h3 className="mt-3 font-fraunces text-[clamp(28px,4vw,44px)] italic leading-tight text-ink">
-        {itemId}
-      </h3>
-      {revealed && (
-        <p className="mt-6 font-fraunces text-[18px] italic leading-relaxed text-graphite">
-          (Item details would render here in production — the today endpoint currently returns
-          due cards as IDs only. Future iteration hydrates the full item via batched lookup.)
-        </p>
-      )}
-    </div>
-  )
-}

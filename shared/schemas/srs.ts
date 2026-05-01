@@ -93,6 +93,14 @@ export const SRS_DAILY_NEW_TARGETS = {
   linking: 2,
 } as const
 
+/**
+ * Fraction of a day's introduced items that must be reviewed (any rating)
+ * before the day is marked completed in the roadmap. 0.8 = "did 8 of 10
+ * vocab words today" — strict enough to mean something, lenient enough to
+ * not punish honest 'again' ratings. Plan Decision #14.
+ */
+export const SRS_DAY_COMPLETION_RATIO = 0.8
+
 export const TodayPauseReasonSchema = z.enum(['review_backlog'])
 export type TodayPauseReason = z.infer<typeof TodayPauseReasonSchema>
 

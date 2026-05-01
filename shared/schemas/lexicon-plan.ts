@@ -137,6 +137,10 @@ export function lexiconWeekTotal(discipline: LexiconDiscipline): number {
 export const LexiconPlanSchema = z.object({
   discipline: LexiconDisciplineSchema,
   level: BandLevelSchema,
-  weeks: z.array(LexiconWeekStubSchema).length(12),
+  // Either 12 fully-defined weeks (ready level) or 0 weeks (coming-soon stub).
+  weeks: z.array(LexiconWeekStubSchema).max(12),
+  // True when the level has no content yet — frontend renders editorial
+  // coming-soon copy instead of the roadmap.
+  comingSoon: z.boolean().optional(),
 })
 export type LexiconPlan = z.infer<typeof LexiconPlanSchema>

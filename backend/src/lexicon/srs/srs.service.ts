@@ -1,11 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, Types } from 'mongoose'
 import type { LexiconDiscipline } from '@shared/schemas/lexicon'
-import type { ReviewRating, SrsCard } from '@shared/schemas/srs'
+import { SRS_DAILY_NEW_TARGETS, type ReviewRating, type SrsCard } from '@shared/schemas/srs'
+import { User, type UserDocument } from '../../users/schemas/user.schema'
 import { LexiconService } from '../lexicon.service'
 import { SrsCardDoc, type SrsCardDocument } from '../schemas/srs-card.schema'
 import { buildInitialCard, processReview } from './leitner'
+import { endOfDayInTz, startOfDayInTz } from './tz-helper'
 
 function docToCard(doc: SrsCardDocument): SrsCard {
   return {
@@ -25,6 +27,7 @@ function docToCard(doc: SrsCardDocument): SrsCard {
 export class SrsService {
   constructor(
     @InjectModel(SrsCardDoc.name) private readonly cardModel: Model<SrsCardDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     private readonly lexiconService: LexiconService,
   ) {}
 
@@ -63,6 +66,13 @@ export class SrsService {
     }
   }
 
+  /**
+   * Submit a review rating for an item. Idempotently introduces the card if
+   * one doesn't yet exist (i.e., this is the first interaction with the item),
+   * then applies the Leitner update in a single round-trip from the client's
+   * perspective. The unique `(userId, itemId)` index makes the introduce-if-
+   * missing path race-safe.
+   */
   async submitReview(
     userId: string,
     itemId: string,
@@ -70,8 +80,57 @@ export class SrsService {
     now: Date,
   ): Promise<SrsCard> {
     const userObjectId = new Types.ObjectId(userId)
-    const doc = await this.cardModel.findOne({ userId: userObjectId, itemId }).exec()
-    if (!doc) throw new NotFoundException(`No SRS card for item ${itemId}; introduce first`)
+    let doc = await this.cardModel.findOne({ userId: userObjectId, itemId }).exec()
+
+    if (!doc) {
+      // Auto-introduce: card doesn't exist yet, create it before reviewing.
+      const item = await this.lexiconService.findItemById(itemId)
+      if (!item) throw new NotFoundException(`Item not found: ${itemId}`)
+
+      // Quota guard: re-check at write time to defeat the open-two-tabs race.
+      // The today queue gives a soft quota in its response; this is the hard
+      // enforcement. Throws 409 so the client can render a friendly banner.
+      const userDoc = await this.userModel
+        .findById(userObjectId, { userTimezone: 1 })
+        .lean()
+        .exec()
+      const userTimezone = userDoc?.userTimezone ?? 'UTC'
+      const startOfTodayLocal = startOfDayInTz(now, userTimezone)
+      const endOfTodayLocal = endOfDayInTz(now, userTimezone)
+      const introducedToday = await this.cardModel
+        .countDocuments({
+          userId: userObjectId,
+          discipline: item.discipline,
+          introducedAt: { $gte: startOfTodayLocal, $lte: endOfTodayLocal },
+        })
+        .exec()
+      if (introducedToday >= SRS_DAILY_NEW_TARGETS[item.discipline]) {
+        throw new ConflictException(
+          `Daily new-item quota reached for ${item.discipline}. Continue with reviews; new items resume tomorrow.`,
+        )
+      }
+
+      const fresh = buildInitialCard({ itemId, discipline: item.discipline, now })
+      try {
+        doc = await this.cardModel.create({
+          userId: userObjectId,
+          itemId: fresh.itemId,
+          discipline: fresh.discipline,
+          box: fresh.box,
+          status: fresh.status,
+          lastReviewedAt: null,
+          nextDueAt: new Date(fresh.nextDueAt),
+          totalReviews: 0,
+          totalCorrect: 0,
+          introducedAt: new Date(fresh.introducedAt),
+        })
+      } catch (err) {
+        // Race: another concurrent review introduced first. Reload the winner.
+        const won = await this.cardModel.findOne({ userId: userObjectId, itemId }).exec()
+        if (!won) throw err
+        doc = won
+      }
+    }
 
     const updated = processReview(docToCard(doc), rating, now)
     doc.box = updated.box
@@ -113,16 +172,22 @@ export class SrsService {
     return docs.map(docToCard)
   }
 
-  async findIntroducedCardIds(
+/**
+   * Returns the earliest `introducedAt` for the user × discipline pair, or
+   * `null` if they've never introduced anything in that discipline. Used by
+   * progress derivation as the epoch (week 1 day 1) for daysCompleted.
+   */
+  async findEarliestIntroducedAt(
     userId: string,
     discipline: LexiconDiscipline,
-  ): Promise<string[]> {
+  ): Promise<Date | null> {
     const userObjectId = new Types.ObjectId(userId)
-    const docs = await this.cardModel
-      .find({ userId: userObjectId, discipline }, { itemId: 1 })
+    const doc = await this.cardModel
+      .findOne({ userId: userObjectId, discipline }, { introducedAt: 1 })
+      .sort({ introducedAt: 1 })
       .lean()
       .exec()
-    return docs.map((d) => d.itemId)
+    return doc?.introducedAt ?? null
   }
 
   async countInteractionsInRange(params: {

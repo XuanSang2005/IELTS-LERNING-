@@ -22,6 +22,9 @@ export function useReviewMutation(opts: {
       void queryClient.invalidateQueries({
         queryKey: ['lexicon', 'progress', opts.discipline, opts.level],
       })
+      void queryClient.invalidateQueries({
+        queryKey: ['lexicon', 'metrics', opts.discipline],
+      })
     },
   })
 }

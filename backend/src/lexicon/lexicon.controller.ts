@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Get, NotFoundException, Post, Query, UseGuards } from '@nestjs/common'
+import { BadRequestException, Controller, Get, Query, UseGuards } from '@nestjs/common'
 import { LexiconDisciplineSchema } from '@shared/schemas/lexicon'
 import { BandLevelSchema } from '@shared/schemas/practice'
 import { JwtAuthGuard } from '../common/jwt-auth.guard'
@@ -9,15 +9,6 @@ import { LexiconService } from './lexicon.service'
 export class LexiconController {
   constructor(private readonly service: LexiconService) {}
 
-  /**
-   * Wipe and reload all lexicon items + plans from the seed files.
-   * Use after the seed contents change to replace placeholder data.
-   */
-  @Post('reseed')
-  async reseed() {
-    return this.service.reseed()
-  }
-
   @Get('plan')
   async plan(@Query('discipline') disciplineRaw: string, @Query('level') levelRaw: string) {
     const discipline = LexiconDisciplineSchema.safeParse(disciplineRaw)
@@ -25,7 +16,17 @@ export class LexiconController {
     if (!discipline.success) throw new BadRequestException('discipline must be one of: vocabulary, collocations, linking')
     if (!level.success) throw new BadRequestException('level must be one of: foundation, intermediate, advanced, mastery')
     const plan = await this.service.findPlan(discipline.data, level.data)
-    if (!plan) throw new NotFoundException('Plan not seeded for this (discipline, level) pair')
+    if (!plan) {
+      // Editorial coming-soon stub for levels that haven't been content-filled
+      // (Foundation / Advanced / Mastery in MVP). 200 + empty weeks lets the
+      // frontend render its own copy without forcing an error path.
+      return {
+        discipline: discipline.data,
+        level: level.data,
+        weeks: [],
+        comingSoon: true,
+      }
+    }
     return plan
   }
 
@@ -44,7 +45,6 @@ export class LexiconController {
     if (!Number.isInteger(week) || week < 1 || week > 12) {
       throw new BadRequestException('week must be 1-12')
     }
-    // If `day` omitted, return all items for the week (used by WeekQuiz).
     if (dayRaw === undefined || dayRaw === '') {
       return this.service.findItemsForWeek({
         discipline: discipline.data,

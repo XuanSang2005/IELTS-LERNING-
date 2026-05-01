@@ -1,47 +1,10 @@
-import { Injectable, OnModuleInit } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 import type { LexiconDiscipline } from '@shared/schemas/lexicon'
 import type { LexiconItem } from '@shared/schemas/lexicon-items'
 import type { LexiconPlan } from '@shared/schemas/lexicon-plan'
 import type { BandLevel } from '@shared/schemas/practice'
-import { INTERMEDIATE_COLLOC_WEEK_01 } from './data/intermediate-colloc-week-01'
-import { INTERMEDIATE_COLLOC_WEEK_02 } from './data/intermediate-colloc-week-02'
-import { INTERMEDIATE_COLLOC_WEEK_03 } from './data/intermediate-colloc-week-03'
-import { INTERMEDIATE_COLLOC_WEEK_04 } from './data/intermediate-colloc-week-04'
-import { INTERMEDIATE_COLLOC_WEEK_05 } from './data/intermediate-colloc-week-05'
-import { INTERMEDIATE_COLLOC_WEEK_06 } from './data/intermediate-colloc-week-06'
-import { INTERMEDIATE_COLLOC_WEEK_07 } from './data/intermediate-colloc-week-07'
-import { INTERMEDIATE_COLLOC_WEEK_08 } from './data/intermediate-colloc-week-08'
-import { INTERMEDIATE_COLLOC_WEEK_09 } from './data/intermediate-colloc-week-09'
-import { INTERMEDIATE_COLLOC_WEEK_10 } from './data/intermediate-colloc-week-10'
-import { INTERMEDIATE_COLLOC_WEEK_11 } from './data/intermediate-colloc-week-11'
-import { INTERMEDIATE_COLLOC_WEEK_12 } from './data/intermediate-colloc-week-12'
-import { INTERMEDIATE_LINKING_WEEK_01 } from './data/intermediate-linking-week-01'
-import { INTERMEDIATE_LINKING_WEEK_02 } from './data/intermediate-linking-week-02'
-import { INTERMEDIATE_LINKING_WEEK_03 } from './data/intermediate-linking-week-03'
-import { INTERMEDIATE_LINKING_WEEK_04 } from './data/intermediate-linking-week-04'
-import { INTERMEDIATE_LINKING_WEEK_05 } from './data/intermediate-linking-week-05'
-import { INTERMEDIATE_LINKING_WEEK_06 } from './data/intermediate-linking-week-06'
-import { INTERMEDIATE_LINKING_WEEK_07 } from './data/intermediate-linking-week-07'
-import { INTERMEDIATE_LINKING_WEEK_08 } from './data/intermediate-linking-week-08'
-import { INTERMEDIATE_LINKING_WEEK_09 } from './data/intermediate-linking-week-09'
-import { INTERMEDIATE_LINKING_WEEK_10 } from './data/intermediate-linking-week-10'
-import { INTERMEDIATE_LINKING_WEEK_11 } from './data/intermediate-linking-week-11'
-import { INTERMEDIATE_LINKING_WEEK_12 } from './data/intermediate-linking-week-12'
-import { INTERMEDIATE_PLANS } from './data/intermediate-plans'
-import { INTERMEDIATE_VOCAB_WEEK_01 } from './data/intermediate-vocab-week-01'
-import { INTERMEDIATE_VOCAB_WEEK_02 } from './data/intermediate-vocab-week-02'
-import { INTERMEDIATE_VOCAB_WEEK_03 } from './data/intermediate-vocab-week-03'
-import { INTERMEDIATE_VOCAB_WEEK_04 } from './data/intermediate-vocab-week-04'
-import { INTERMEDIATE_VOCAB_WEEK_05 } from './data/intermediate-vocab-week-05'
-import { INTERMEDIATE_VOCAB_WEEK_06 } from './data/intermediate-vocab-week-06'
-import { INTERMEDIATE_VOCAB_WEEK_07 } from './data/intermediate-vocab-week-07'
-import { INTERMEDIATE_VOCAB_WEEK_08 } from './data/intermediate-vocab-week-08'
-import { INTERMEDIATE_VOCAB_WEEK_09 } from './data/intermediate-vocab-week-09'
-import { INTERMEDIATE_VOCAB_WEEK_10 } from './data/intermediate-vocab-week-10'
-import { INTERMEDIATE_VOCAB_WEEK_11 } from './data/intermediate-vocab-week-11'
-import { INTERMEDIATE_VOCAB_WEEK_12 } from './data/intermediate-vocab-week-12'
 import {
   docToCollocationItem,
   docToLinkingItem,
@@ -55,133 +18,11 @@ import {
 } from './schemas/lexicon-plan.schema'
 
 @Injectable()
-export class LexiconService implements OnModuleInit {
+export class LexiconService {
   constructor(
     @InjectModel('LexiconItem') private readonly itemModel: Model<LexiconItemDocument>,
     @InjectModel(LexiconPlanDoc.name) private readonly planModel: Model<LexiconPlanDocument>,
   ) {}
-
-  async onModuleInit(): Promise<void> {
-    await this.seedIfEmpty()
-  }
-
-  async seedIfEmpty(): Promise<{ plansSeeded: number; itemsSeeded: number }> {
-    let plansSeeded = 0
-    let itemsSeeded = 0
-
-    const planCount = await this.planModel.estimatedDocumentCount()
-    if (planCount === 0) {
-      await this.planModel.insertMany(INTERMEDIATE_PLANS)
-      plansSeeded = INTERMEDIATE_PLANS.length
-    }
-
-    const itemCount = await this.itemModel.estimatedDocumentCount()
-    if (itemCount === 0) {
-      const vocabDocs = [
-        ...INTERMEDIATE_VOCAB_WEEK_01,
-        ...INTERMEDIATE_VOCAB_WEEK_02,
-        ...INTERMEDIATE_VOCAB_WEEK_03,
-        ...INTERMEDIATE_VOCAB_WEEK_04,
-        ...INTERMEDIATE_VOCAB_WEEK_05,
-        ...INTERMEDIATE_VOCAB_WEEK_06,
-        ...INTERMEDIATE_VOCAB_WEEK_07,
-        ...INTERMEDIATE_VOCAB_WEEK_08,
-        ...INTERMEDIATE_VOCAB_WEEK_09,
-        ...INTERMEDIATE_VOCAB_WEEK_10,
-        ...INTERMEDIATE_VOCAB_WEEK_11,
-        ...INTERMEDIATE_VOCAB_WEEK_12,
-      ].map(
-        (it) => ({
-          slug: it.id,
-          discipline: it.discipline,
-          level: it.level,
-          week: it.week,
-          day: it.day,
-          headword: it.headword,
-          partOfSpeech: it.partOfSpeech,
-          definition: it.definition,
-          example: it.example,
-          register: it.register,
-          topic: it.topic,
-          frequency: it.frequency,
-          synonyms: it.synonyms,
-        }),
-      )
-      const collocDocs = [
-        ...INTERMEDIATE_COLLOC_WEEK_01,
-        ...INTERMEDIATE_COLLOC_WEEK_02,
-        ...INTERMEDIATE_COLLOC_WEEK_03,
-        ...INTERMEDIATE_COLLOC_WEEK_04,
-        ...INTERMEDIATE_COLLOC_WEEK_05,
-        ...INTERMEDIATE_COLLOC_WEEK_06,
-        ...INTERMEDIATE_COLLOC_WEEK_07,
-        ...INTERMEDIATE_COLLOC_WEEK_08,
-        ...INTERMEDIATE_COLLOC_WEEK_09,
-        ...INTERMEDIATE_COLLOC_WEEK_10,
-        ...INTERMEDIATE_COLLOC_WEEK_11,
-        ...INTERMEDIATE_COLLOC_WEEK_12,
-      ].map(
-        (it) => ({
-          slug: it.id,
-          discipline: it.discipline,
-          level: it.level,
-          week: it.week,
-          day: it.day,
-          phrase: it.phrase,
-          pattern: it.pattern,
-          definition: it.definition,
-          example: it.example,
-          register: it.register,
-          topic: it.topic,
-          alternatives: it.alternatives,
-          note: it.note,
-        }),
-      )
-      const linkingDocs = [
-        ...INTERMEDIATE_LINKING_WEEK_01,
-        ...INTERMEDIATE_LINKING_WEEK_02,
-        ...INTERMEDIATE_LINKING_WEEK_03,
-        ...INTERMEDIATE_LINKING_WEEK_04,
-        ...INTERMEDIATE_LINKING_WEEK_05,
-        ...INTERMEDIATE_LINKING_WEEK_06,
-        ...INTERMEDIATE_LINKING_WEEK_07,
-        ...INTERMEDIATE_LINKING_WEEK_08,
-        ...INTERMEDIATE_LINKING_WEEK_09,
-        ...INTERMEDIATE_LINKING_WEEK_10,
-        ...INTERMEDIATE_LINKING_WEEK_11,
-        ...INTERMEDIATE_LINKING_WEEK_12,
-      ].map(
-        (it) => ({
-          slug: it.id,
-          discipline: it.discipline,
-          level: it.level,
-          week: it.week,
-          day: it.day,
-          phrase: it.phrase,
-          function: it.function,
-          register: it.register,
-          positions: it.positions,
-          example: it.example,
-          note: it.note,
-        }),
-      )
-      await this.itemModel.insertMany([...vocabDocs, ...collocDocs, ...linkingDocs])
-      itemsSeeded = vocabDocs.length + collocDocs.length + linkingDocs.length
-    }
-
-    return { plansSeeded, itemsSeeded }
-  }
-
-  /**
-   * Force a complete reseed: wipes lexicon_items + lexicon_plans, then runs
-   * the seed loop. Use after the seed contents change so that placeholder /
-   * stale data is replaced. Idempotent — safe to call repeatedly.
-   */
-  async reseed(): Promise<{ plansSeeded: number; itemsSeeded: number }> {
-    await this.itemModel.deleteMany({})
-    await this.planModel.deleteMany({})
-    return this.seedIfEmpty()
-  }
 
   async findPlan(discipline: LexiconDiscipline, level: BandLevel): Promise<LexiconPlan | null> {
     const doc = await this.planModel.findOne({ discipline, level }).lean().exec()
@@ -244,21 +85,49 @@ export class LexiconService implements OnModuleInit {
 
   /**
    * Selects the next N items the user has not yet been introduced to,
-   * scoped to discipline + level. Used by the SRS today queue.
+   * scoped to discipline + level. Uses a $lookup left-anti-join against
+   * srs_cards instead of pulling every introduced ID into memory + $nin —
+   * O(N) on the user's introduced set was bloating memory and query plan
+   * once a learner crossed ~500 cards.
    */
   async findNextNewItems(params: {
+    userId: string
     discipline: LexiconDiscipline
     level: BandLevel
-    excludeIds: string[]
     limit: number
   }): Promise<LexiconItem[]> {
-    const { discipline, level, excludeIds, limit } = params
+    const { userId, discipline, level, limit } = params
     if (limit <= 0) return []
+    const userObjectId = new Types.ObjectId(userId)
     const docs = (await this.itemModel
-      .find({ discipline, level, slug: { $nin: excludeIds } })
-      .sort({ week: 1, day: 1, slug: 1 })
-      .limit(limit)
-      .lean()
+      .aggregate([
+        { $match: { discipline, level } },
+        {
+          $lookup: {
+            from: 'srs_cards',
+            let: { itemSlug: '$slug' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ['$itemId', '$$itemSlug'] },
+                      { $eq: ['$userId', userObjectId] },
+                    ],
+                  },
+                },
+              },
+              { $limit: 1 },
+              { $project: { _id: 1 } },
+            ],
+            as: 'existingCard',
+          },
+        },
+        { $match: { existingCard: { $size: 0 } } },
+        { $sort: { week: 1, day: 1, slug: 1 } },
+        { $limit: limit },
+        { $project: { existingCard: 0 } },
+      ])
       .exec()) as unknown as RawLexiconDoc[]
     return docs.map((doc) => this.docToItem(doc))
   }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import type { LexiconDiscipline } from '@shared/schemas/lexicon'
 import {
   SRS_DAILY_NEW_TARGETS,
@@ -12,6 +12,8 @@ import { endOfDayInTz, startOfDayInTz } from './tz-helper'
 
 @Injectable()
 export class TodayQueueService {
+  private readonly logger = new Logger(TodayQueueService.name)
+
   constructor(
     private readonly srsService: SrsService,
     private readonly lexiconService: LexiconService,
@@ -28,7 +30,25 @@ export class TodayQueueService {
     const startLocal = startOfDayInTz(now, userTimezone)
     const endLocal = endOfDayInTz(now, userTimezone)
 
-    const allDue = await this.srsService.findDueCards(userId, discipline, endLocal)
+    const allDueRaw = await this.srsService.findDueCards(userId, discipline, endLocal)
+
+    // Drop orphan cards (item deleted from catalogue but card still exists).
+    // We must filter BEFORE applying the cap so the user's queue reflects
+    // real renderable items, not zombie counts.
+    const dueItemsRaw = await this.lexiconService.findItemsByIds(
+      allDueRaw.map((c) => c.itemId),
+    )
+    const dueItemsById = new Map(dueItemsRaw.map((it) => [it.id, it]))
+    const orphanIds = allDueRaw
+      .filter((c) => !dueItemsById.has(c.itemId))
+      .map((c) => c.itemId)
+    if (orphanIds.length > 0) {
+      this.logger.warn(
+        `Orphan SRS cards detected (user=${userId}, discipline=${discipline}): ${orphanIds.join(', ')}`,
+      )
+    }
+    const allDue = allDueRaw.filter((c) => dueItemsById.has(c.itemId))
+
     const cap = SRS_DAILY_REVIEW_CAPS[discipline]
     const dueReviews = allDue.slice(0, cap)
     const spilloverCount = Math.max(0, allDue.length - cap)
@@ -46,24 +66,16 @@ export class TodayQueueService {
 
     let newItems: TodayQueue['newItems'] = []
     if (!paused && remainingNewQuota > 0) {
-      const introducedIds = await this.srsService.findIntroducedCardIds(userId, discipline)
       newItems = await this.lexiconService.findNextNewItems({
+        userId,
         discipline,
         level,
-        excludeIds: introducedIds,
         limit: remainingNewQuota,
       })
     }
 
-    // Hydrate due items in the same order as dueReviews so the SrsDeck can
-    // render the full card without a second round-trip.
-    const dueItemsRaw = await this.lexiconService.findItemsByIds(
-      dueReviews.map((c) => c.itemId),
-    )
-    const dueItemsById = new Map(dueItemsRaw.map((it) => [it.id, it]))
-    const dueItems = dueReviews
-      .map((c) => dueItemsById.get(c.itemId))
-      .filter((it): it is NonNullable<typeof it> => Boolean(it))
+    // dueItems hydrated from the pre-filtered map (orphans already dropped above).
+    const dueItems = dueReviews.map((c) => dueItemsById.get(c.itemId)!)
 
     return {
       discipline,

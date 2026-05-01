@@ -51,3 +51,6 @@ export const SrsCardMongooseSchema = SchemaFactory.createForClass(SrsCardDoc)
 SrsCardMongooseSchema.index({ userId: 1, itemId: 1 }, { unique: true })
 // Due-queue lookup.
 SrsCardMongooseSchema.index({ userId: 1, discipline: 1, nextDueAt: 1 })
+// Range queries on day-bucket aggregation (progress + today-queue quota count).
+SrsCardMongooseSchema.index({ userId: 1, discipline: 1, introducedAt: 1 })
+SrsCardMongooseSchema.index({ userId: 1, discipline: 1, lastReviewedAt: 1 })

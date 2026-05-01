@@ -32,6 +32,26 @@ export function LexiconRoadmap({ discipline, level }: LexiconRoadmapProps) {
     )
   }
 
+  // Coming-soon stub: backend returned a plan with no weeks yet (Foundation /
+  // Advanced / Mastery in MVP). Render an editorial holding card.
+  if (planQuery.data.weeks.length === 0 || planQuery.data.comingSoon) {
+    return (
+      <div className="mx-auto w-full max-w-[1100px] px-6 py-24 text-center md:px-10 xl:px-14">
+        <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-claret">
+          ◆ COMING SOON
+        </p>
+        <h2 className="mt-6 font-fraunces text-[34px] italic leading-[1.05] text-ink md:text-[44px]">
+          This arc opens with the next cohort.
+        </h2>
+        <p className="mt-6 font-fraunces text-[18px] italic leading-relaxed text-graphite md:text-[20px]">
+          The library prepares its volumes. While you wait, the
+          <em className="not-italic text-claret"> Intermediate</em> arc remains the most
+          carefully kept on the shelf — return to it from the level selector above.
+        </p>
+      </div>
+    )
+  }
+
   const progressByWeek = new Map(progressQuery.data?.map((p) => [p.week, p]) ?? [])
 
   return (
