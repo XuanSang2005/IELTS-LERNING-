@@ -14,10 +14,10 @@ export function defaultProfile(name: string): UserProfile {
     phase: 1,
     startDate: nowIso,
     disciplineProgress: {
-      grammar: { completed: 0, total: 24 },
-      vocabulary: { completed: 0, total: 30 },
-      collocations: { completed: 0, total: 20 },
-      linking: { completed: 0, total: 14 },
+      grammar: { completed: 0, total: 12 },
+      vocabulary: { completed: 0, total: 12 },
+      collocations: { completed: 0, total: 12 },
+      linking: { completed: 0, total: 12 },
     },
     currentBand: {
       level: 'intermediate',
@@ -33,6 +33,9 @@ export function defaultProfile(name: string): UserProfile {
       writingBands: [],
     },
     lastBandReassessment: null,
+    diagnosticCompletedAt: null,
+    diagnosticSkippedAt: null,
+    diagnosticResult: null,
   }
 }
 

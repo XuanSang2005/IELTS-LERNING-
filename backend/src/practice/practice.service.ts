@@ -116,6 +116,9 @@ export class PracticeService {
         writingBands: [],
       },
       lastBandReassessment: p.lastBandReassessment ?? null,
+      diagnosticCompletedAt: p.diagnosticCompletedAt ?? null,
+      diagnosticSkippedAt: p.diagnosticSkippedAt ?? null,
+      diagnosticResult: p.diagnosticResult ?? null,
     }
     await this.users.setProfile(userId, patched)
   }

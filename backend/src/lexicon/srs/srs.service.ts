@@ -173,6 +173,52 @@ export class SrsService {
   }
 
 /**
+   * Derives the user's current consecutive-day review streak from
+   * srs_cards.lastReviewedAt timestamps in their local timezone.
+   */
+  async findUserStreak(userId: string, userTimezone: string): Promise<number> {
+    const userObjectId = new Types.ObjectId(userId)
+    const since = new Date(Date.now() - 365 * 24 * 60 * 60_000)
+    const buckets = await this.cardModel
+      .aggregate<{ dateKey: string }>([
+        { $match: { userId: userObjectId, lastReviewedAt: { $gte: since } } },
+        {
+          $group: {
+            _id: {
+              $dateToString: {
+                format: '%Y-%m-%d',
+                date: '$lastReviewedAt',
+                timezone: userTimezone,
+              },
+            },
+          },
+        },
+        { $project: { _id: 0, dateKey: '$_id' } },
+      ])
+      .exec()
+    const reviewedSet = new Set(buckets.map((b) => b.dateKey))
+    if (reviewedSet.size === 0) return 0
+
+    const fmt = new Intl.DateTimeFormat('en-CA', {
+      timeZone: userTimezone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
+    let cursor = new Date()
+    if (!reviewedSet.has(fmt.format(cursor))) {
+      cursor = new Date(cursor.getTime() - 24 * 60 * 60_000)
+      if (!reviewedSet.has(fmt.format(cursor))) return 0
+    }
+    let streak = 0
+    while (reviewedSet.has(fmt.format(cursor))) {
+      streak++
+      cursor = new Date(cursor.getTime() - 24 * 60 * 60_000)
+    }
+    return streak
+  }
+
+  /**
    * Returns the earliest `introducedAt` for the user × discipline pair, or
    * `null` if they've never introduced anything in that discipline. Used by
    * progress derivation as the epoch (week 1 day 1) for daysCompleted.

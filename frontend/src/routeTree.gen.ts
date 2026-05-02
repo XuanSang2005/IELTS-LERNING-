@@ -23,16 +23,22 @@ import { Route as TestsIndexRouteImport } from './routes/tests.index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as TestsTestIdRouteImport } from './routes/tests.$testId'
 import { Route as PayPaymentIdRouteImport } from './routes/pay.$paymentId'
+import { Route as OnboardingDiagnosticRouteImport } from './routes/onboarding.diagnostic'
 import { Route as OnboardingBandRouteImport } from './routes/onboarding.band'
 import { Route as AppVocabularyRouteImport } from './routes/app.vocabulary'
 import { Route as AppSessionRouteImport } from './routes/app.session'
 import { Route as AppLexiconRouteImport } from './routes/app.lexicon'
 import { Route as AppGrammarRouteImport } from './routes/app.grammar'
 import { Route as TestsTestIdIndexRouteImport } from './routes/tests.$testId.index'
+import { Route as OnboardingDiagnosticIndexRouteImport } from './routes/onboarding.diagnostic.index'
 import { Route as AppSessionIndexRouteImport } from './routes/app.session.index'
 import { Route as AppLexiconIndexRouteImport } from './routes/app.lexicon.index'
 import { Route as AppGrammarIndexRouteImport } from './routes/app.grammar.index'
 import { Route as TestsTestIdResultsRouteImport } from './routes/tests.$testId.results'
+import { Route as OnboardingDiagnosticWritingRouteImport } from './routes/onboarding.diagnostic.writing'
+import { Route as OnboardingDiagnosticResultRouteImport } from './routes/onboarding.diagnostic.result'
+import { Route as OnboardingDiagnosticReadingRouteImport } from './routes/onboarding.diagnostic.reading'
+import { Route as OnboardingDiagnosticListeningRouteImport } from './routes/onboarding.diagnostic.listening'
 import { Route as AppLexiconWeekRouteImport } from './routes/app.lexicon.$week'
 import { Route as AppGrammarWeekRouteImport } from './routes/app.grammar.$week'
 
@@ -106,6 +112,11 @@ const PayPaymentIdRoute = PayPaymentIdRouteImport.update({
   path: '/pay/$paymentId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OnboardingDiagnosticRoute = OnboardingDiagnosticRouteImport.update({
+  id: '/onboarding/diagnostic',
+  path: '/onboarding/diagnostic',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingBandRoute = OnboardingBandRouteImport.update({
   id: '/onboarding/band',
   path: '/onboarding/band',
@@ -136,6 +147,12 @@ const TestsTestIdIndexRoute = TestsTestIdIndexRouteImport.update({
   path: '/',
   getParentRoute: () => TestsTestIdRoute,
 } as any)
+const OnboardingDiagnosticIndexRoute =
+  OnboardingDiagnosticIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => OnboardingDiagnosticRoute,
+  } as any)
 const AppSessionIndexRoute = AppSessionIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -156,6 +173,30 @@ const TestsTestIdResultsRoute = TestsTestIdResultsRouteImport.update({
   path: '/results',
   getParentRoute: () => TestsTestIdRoute,
 } as any)
+const OnboardingDiagnosticWritingRoute =
+  OnboardingDiagnosticWritingRouteImport.update({
+    id: '/writing',
+    path: '/writing',
+    getParentRoute: () => OnboardingDiagnosticRoute,
+  } as any)
+const OnboardingDiagnosticResultRoute =
+  OnboardingDiagnosticResultRouteImport.update({
+    id: '/result',
+    path: '/result',
+    getParentRoute: () => OnboardingDiagnosticRoute,
+  } as any)
+const OnboardingDiagnosticReadingRoute =
+  OnboardingDiagnosticReadingRouteImport.update({
+    id: '/reading',
+    path: '/reading',
+    getParentRoute: () => OnboardingDiagnosticRoute,
+  } as any)
+const OnboardingDiagnosticListeningRoute =
+  OnboardingDiagnosticListeningRouteImport.update({
+    id: '/listening',
+    path: '/listening',
+    getParentRoute: () => OnboardingDiagnosticRoute,
+  } as any)
 const AppLexiconWeekRoute = AppLexiconWeekRouteImport.update({
   id: '/$week',
   path: '/$week',
@@ -183,16 +224,22 @@ export interface FileRoutesByFullPath {
   '/app/session': typeof AppSessionRouteWithChildren
   '/app/vocabulary': typeof AppVocabularyRoute
   '/onboarding/band': typeof OnboardingBandRoute
+  '/onboarding/diagnostic': typeof OnboardingDiagnosticRouteWithChildren
   '/pay/$paymentId': typeof PayPaymentIdRoute
   '/tests/$testId': typeof TestsTestIdRouteWithChildren
   '/app/': typeof AppIndexRoute
   '/tests/': typeof TestsIndexRoute
   '/app/grammar/$week': typeof AppGrammarWeekRoute
   '/app/lexicon/$week': typeof AppLexiconWeekRoute
+  '/onboarding/diagnostic/listening': typeof OnboardingDiagnosticListeningRoute
+  '/onboarding/diagnostic/reading': typeof OnboardingDiagnosticReadingRoute
+  '/onboarding/diagnostic/result': typeof OnboardingDiagnosticResultRoute
+  '/onboarding/diagnostic/writing': typeof OnboardingDiagnosticWritingRoute
   '/tests/$testId/results': typeof TestsTestIdResultsRoute
   '/app/grammar/': typeof AppGrammarIndexRoute
   '/app/lexicon/': typeof AppLexiconIndexRoute
   '/app/session/': typeof AppSessionIndexRoute
+  '/onboarding/diagnostic/': typeof OnboardingDiagnosticIndexRoute
   '/tests/$testId/': typeof TestsTestIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -211,10 +258,15 @@ export interface FileRoutesByTo {
   '/tests': typeof TestsIndexRoute
   '/app/grammar/$week': typeof AppGrammarWeekRoute
   '/app/lexicon/$week': typeof AppLexiconWeekRoute
+  '/onboarding/diagnostic/listening': typeof OnboardingDiagnosticListeningRoute
+  '/onboarding/diagnostic/reading': typeof OnboardingDiagnosticReadingRoute
+  '/onboarding/diagnostic/result': typeof OnboardingDiagnosticResultRoute
+  '/onboarding/diagnostic/writing': typeof OnboardingDiagnosticWritingRoute
   '/tests/$testId/results': typeof TestsTestIdResultsRoute
   '/app/grammar': typeof AppGrammarIndexRoute
   '/app/lexicon': typeof AppLexiconIndexRoute
   '/app/session': typeof AppSessionIndexRoute
+  '/onboarding/diagnostic': typeof OnboardingDiagnosticIndexRoute
   '/tests/$testId': typeof TestsTestIdIndexRoute
 }
 export interface FileRoutesById {
@@ -234,16 +286,22 @@ export interface FileRoutesById {
   '/app/session': typeof AppSessionRouteWithChildren
   '/app/vocabulary': typeof AppVocabularyRoute
   '/onboarding/band': typeof OnboardingBandRoute
+  '/onboarding/diagnostic': typeof OnboardingDiagnosticRouteWithChildren
   '/pay/$paymentId': typeof PayPaymentIdRoute
   '/tests/$testId': typeof TestsTestIdRouteWithChildren
   '/app/': typeof AppIndexRoute
   '/tests/': typeof TestsIndexRoute
   '/app/grammar/$week': typeof AppGrammarWeekRoute
   '/app/lexicon/$week': typeof AppLexiconWeekRoute
+  '/onboarding/diagnostic/listening': typeof OnboardingDiagnosticListeningRoute
+  '/onboarding/diagnostic/reading': typeof OnboardingDiagnosticReadingRoute
+  '/onboarding/diagnostic/result': typeof OnboardingDiagnosticResultRoute
+  '/onboarding/diagnostic/writing': typeof OnboardingDiagnosticWritingRoute
   '/tests/$testId/results': typeof TestsTestIdResultsRoute
   '/app/grammar/': typeof AppGrammarIndexRoute
   '/app/lexicon/': typeof AppLexiconIndexRoute
   '/app/session/': typeof AppSessionIndexRoute
+  '/onboarding/diagnostic/': typeof OnboardingDiagnosticIndexRoute
   '/tests/$testId/': typeof TestsTestIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -264,16 +322,22 @@ export interface FileRouteTypes {
     | '/app/session'
     | '/app/vocabulary'
     | '/onboarding/band'
+    | '/onboarding/diagnostic'
     | '/pay/$paymentId'
     | '/tests/$testId'
     | '/app/'
     | '/tests/'
     | '/app/grammar/$week'
     | '/app/lexicon/$week'
+    | '/onboarding/diagnostic/listening'
+    | '/onboarding/diagnostic/reading'
+    | '/onboarding/diagnostic/result'
+    | '/onboarding/diagnostic/writing'
     | '/tests/$testId/results'
     | '/app/grammar/'
     | '/app/lexicon/'
     | '/app/session/'
+    | '/onboarding/diagnostic/'
     | '/tests/$testId/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -292,10 +356,15 @@ export interface FileRouteTypes {
     | '/tests'
     | '/app/grammar/$week'
     | '/app/lexicon/$week'
+    | '/onboarding/diagnostic/listening'
+    | '/onboarding/diagnostic/reading'
+    | '/onboarding/diagnostic/result'
+    | '/onboarding/diagnostic/writing'
     | '/tests/$testId/results'
     | '/app/grammar'
     | '/app/lexicon'
     | '/app/session'
+    | '/onboarding/diagnostic'
     | '/tests/$testId'
   id:
     | '__root__'
@@ -314,16 +383,22 @@ export interface FileRouteTypes {
     | '/app/session'
     | '/app/vocabulary'
     | '/onboarding/band'
+    | '/onboarding/diagnostic'
     | '/pay/$paymentId'
     | '/tests/$testId'
     | '/app/'
     | '/tests/'
     | '/app/grammar/$week'
     | '/app/lexicon/$week'
+    | '/onboarding/diagnostic/listening'
+    | '/onboarding/diagnostic/reading'
+    | '/onboarding/diagnostic/result'
+    | '/onboarding/diagnostic/writing'
     | '/tests/$testId/results'
     | '/app/grammar/'
     | '/app/lexicon/'
     | '/app/session/'
+    | '/onboarding/diagnostic/'
     | '/tests/$testId/'
   fileRoutesById: FileRoutesById
 }
@@ -339,6 +414,7 @@ export interface RootRouteChildren {
   StudyRoute: typeof StudyRoute
   TestsRoute: typeof TestsRouteWithChildren
   OnboardingBandRoute: typeof OnboardingBandRoute
+  OnboardingDiagnosticRoute: typeof OnboardingDiagnosticRouteWithChildren
   PayPaymentIdRoute: typeof PayPaymentIdRoute
 }
 
@@ -442,6 +518,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PayPaymentIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/onboarding/diagnostic': {
+      id: '/onboarding/diagnostic'
+      path: '/onboarding/diagnostic'
+      fullPath: '/onboarding/diagnostic'
+      preLoaderRoute: typeof OnboardingDiagnosticRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding/band': {
       id: '/onboarding/band'
       path: '/onboarding/band'
@@ -484,6 +567,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TestsTestIdIndexRouteImport
       parentRoute: typeof TestsTestIdRoute
     }
+    '/onboarding/diagnostic/': {
+      id: '/onboarding/diagnostic/'
+      path: '/'
+      fullPath: '/onboarding/diagnostic/'
+      preLoaderRoute: typeof OnboardingDiagnosticIndexRouteImport
+      parentRoute: typeof OnboardingDiagnosticRoute
+    }
     '/app/session/': {
       id: '/app/session/'
       path: '/'
@@ -511,6 +601,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/tests/$testId/results'
       preLoaderRoute: typeof TestsTestIdResultsRouteImport
       parentRoute: typeof TestsTestIdRoute
+    }
+    '/onboarding/diagnostic/writing': {
+      id: '/onboarding/diagnostic/writing'
+      path: '/writing'
+      fullPath: '/onboarding/diagnostic/writing'
+      preLoaderRoute: typeof OnboardingDiagnosticWritingRouteImport
+      parentRoute: typeof OnboardingDiagnosticRoute
+    }
+    '/onboarding/diagnostic/result': {
+      id: '/onboarding/diagnostic/result'
+      path: '/result'
+      fullPath: '/onboarding/diagnostic/result'
+      preLoaderRoute: typeof OnboardingDiagnosticResultRouteImport
+      parentRoute: typeof OnboardingDiagnosticRoute
+    }
+    '/onboarding/diagnostic/reading': {
+      id: '/onboarding/diagnostic/reading'
+      path: '/reading'
+      fullPath: '/onboarding/diagnostic/reading'
+      preLoaderRoute: typeof OnboardingDiagnosticReadingRouteImport
+      parentRoute: typeof OnboardingDiagnosticRoute
+    }
+    '/onboarding/diagnostic/listening': {
+      id: '/onboarding/diagnostic/listening'
+      path: '/listening'
+      fullPath: '/onboarding/diagnostic/listening'
+      preLoaderRoute: typeof OnboardingDiagnosticListeningRouteImport
+      parentRoute: typeof OnboardingDiagnosticRoute
     }
     '/app/lexicon/$week': {
       id: '/app/lexicon/$week'
@@ -613,6 +731,25 @@ const TestsRouteChildren: TestsRouteChildren = {
 
 const TestsRouteWithChildren = TestsRoute._addFileChildren(TestsRouteChildren)
 
+interface OnboardingDiagnosticRouteChildren {
+  OnboardingDiagnosticListeningRoute: typeof OnboardingDiagnosticListeningRoute
+  OnboardingDiagnosticReadingRoute: typeof OnboardingDiagnosticReadingRoute
+  OnboardingDiagnosticResultRoute: typeof OnboardingDiagnosticResultRoute
+  OnboardingDiagnosticWritingRoute: typeof OnboardingDiagnosticWritingRoute
+  OnboardingDiagnosticIndexRoute: typeof OnboardingDiagnosticIndexRoute
+}
+
+const OnboardingDiagnosticRouteChildren: OnboardingDiagnosticRouteChildren = {
+  OnboardingDiagnosticListeningRoute: OnboardingDiagnosticListeningRoute,
+  OnboardingDiagnosticReadingRoute: OnboardingDiagnosticReadingRoute,
+  OnboardingDiagnosticResultRoute: OnboardingDiagnosticResultRoute,
+  OnboardingDiagnosticWritingRoute: OnboardingDiagnosticWritingRoute,
+  OnboardingDiagnosticIndexRoute: OnboardingDiagnosticIndexRoute,
+}
+
+const OnboardingDiagnosticRouteWithChildren =
+  OnboardingDiagnosticRoute._addFileChildren(OnboardingDiagnosticRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
@@ -625,6 +762,7 @@ const rootRouteChildren: RootRouteChildren = {
   StudyRoute: StudyRoute,
   TestsRoute: TestsRouteWithChildren,
   OnboardingBandRoute: OnboardingBandRoute,
+  OnboardingDiagnosticRoute: OnboardingDiagnosticRouteWithChildren,
   PayPaymentIdRoute: PayPaymentIdRoute,
 }
 export const routeTree = rootRouteImport

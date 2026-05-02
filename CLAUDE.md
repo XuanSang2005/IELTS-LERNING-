@@ -226,15 +226,15 @@ Every primary CTA uses this exact pattern. No exceptions.
 ```tsx
 <Link
   to="/..."
-  className="group relative inline-flex items-center gap-3 bg-ink-warm text-ivory 
-             px-9 py-[17px] font-sans text-[12px] uppercase tracking-[0.22em] 
-             font-medium overflow-hidden transition-all duration-300 
-             hover:bg-ink hover:-translate-y-0.5 
+  className="group relative inline-flex items-center gap-3 bg-ink-warm text-ivory
+             px-9 py-[17px] font-sans text-[12px] uppercase tracking-[0.22em]
+             font-medium overflow-hidden transition-all duration-300
+             hover:bg-ink hover:-translate-y-0.5
              hover:shadow-[0_10px_25px_-8px_rgba(107,31,26,0.35)]"
 >
   <span className="absolute left-0 right-0 bottom-0 h-[2px] bg-claret" />
   <span className="relative z-10">Begin your assessment</span>
-  <span className="relative z-10 text-claret text-[13px] transition-transform 
+  <span className="relative z-10 text-claret text-[13px] transition-transform
                    duration-300 group-hover:translate-x-1">→</span>
 </Link>
 ```
@@ -248,8 +248,8 @@ Rules:
 Outlined secondary (e.g. nav Sign up):
 
 ```tsx
-<Link className="font-sans text-[12px] uppercase tracking-[0.18em] font-medium text-ink 
-                 px-5 py-2.5 border border-ink transition-colors duration-200 
+<Link className="font-sans text-[12px] uppercase tracking-[0.18em] font-medium text-ink
+                 px-5 py-2.5 border border-ink transition-colors duration-200
                  hover:bg-ink hover:text-ivory" />
 ```
 
@@ -259,10 +259,10 @@ Text link tertiary (e.g. `Read the method ↗`):
 <Link className="group inline-flex items-center gap-2 font-sans text-[14px] text-ink">
   <span className="relative">
     Read the method
-    <span className="absolute left-0 -bottom-0.5 w-full h-px bg-line 
+    <span className="absolute left-0 -bottom-0.5 w-full h-px bg-line
                      transition-colors duration-200 group-hover:bg-ink" />
   </span>
-  <span className="text-[13px] transition-all duration-200 
+  <span className="text-[13px] transition-all duration-200
                    group-hover:text-claret group-hover:translate-x-0.5">↗</span>
 </Link>
 ```
@@ -428,15 +428,32 @@ features/<n>/
 - `features/landing/` ✅ — marketing (Nav, Hero, SpecimenCard, TrustStrip, BackgroundOrnaments)
 - `features/method/` ✅ — `/method` page
 - `features/study/` ✅ — `/study` catalog
-- `features/practice/` ✅ — `/app/*` student workspace (AppNav, sessions)
+- `features/dashboard/` ✅ — `/app/` editorial dashboard (Hero / Roadmap / Today's Session / Four Disciplines / Band Scale / Archive). Composed in `routes/app.index.tsx`.
+- `features/practice/` ✅ — `/app/session` daily-loop runner + supporting hooks (`useProfile`, `useDueItems`, `useTodayLog`)
 - `features/auth/` ✅ — login + signup
 - `features/tests/` ✅ — listening / reading / writing / speaking practice tests
 - `features/grammar/` ✅ — `/app/grammar/*` 4-level arc (Foundation → Mastery), lesson/practice/review tabs
-- `features/vocabulary/` ✅ — `/app/vocabulary` reader
+- `features/lexicon/` ✅ — `/app/lexicon/*` 12-week × 3-discipline (vocabulary / collocations / linking) with Leitner SRS
 - `features/atlas/` ✅ — `/atlas` editorial catalogue of Vietnamese-learner mistakes
+- `features/translation/` ✅ — selection-triggered EN → VN popover (Claude Haiku, Mongo cache). Used by Atlas of Mistakes only; expand to other lesson surfaces by wrapping in `<TranslatableArea>`. Excluded from grammar / lexicon / practice / quiz / diagnostic by design.
 - `features/payment/` ✅ — `/pay/$paymentId` QR + bank-transfer flow (Casso webhook)
-- `features/diagnostic/` — onboarding placement test (planned)
+- `features/diagnostic/` ✅ — `/onboarding/diagnostic/*` 4-step placement (5 listening + 5 reading + 1 writing → result). Speaking estimated as `writing - 0.5` until real audio capture lands. Hard gate at `/app/*` redirects first-time users.
 - `features/livestream/` — Friday session embed + archive (planned)
+
+### Dashboard data — current state
+
+The `/app/` dashboard reads from `useProfile()` (`UserProfile` schema in `shared/schemas/practice.ts`). Some sections render **stub data** because the backend doesn't yet aggregate per-discipline progress:
+
+- **The Four Disciplines** (`features/dashboard/components/DisciplineGrid.tsx`) — `total` is hardcoded to `12` weeks (curriculum constant). `completed` reads from `profile.disciplineProgress[d].completed`, which is **always 0** until per-discipline completion is wired to backend aggregation:
+  - Grammar: should derive from `lessons` collection — count lessons read by user at current level.
+  - Vocabulary / Collocations / Linking: should derive from `lexicon_progress` aggregation — count weeks where `daysCompleted.length === 7`.
+- **From Yesterday** band in Today's Session (`TodaySession.tsx`) — items are a hardcoded `YESTERDAY_ITEMS` constant. Should pull from the user's last-session capture / SRS introductions in the previous user-local day.
+- **Archive Strip** (`ArchiveStrip.tsx`) — 3 polaroids with hardcoded captions ("Last writing — graded 6.5", etc.). Should pull last 3 user activities from a unified `recent-activity` endpoint.
+- **Editorial quote** in DashboardHero — `dueCount` is real (from `useDueItems()`); the framing copy is static.
+- **Band descriptor strip** in `BandScale.tsx` — descriptors derived from `bandDescriptor()` lookup keyed by `currentBand.range[0]`. Real data, no stub.
+- **Roadmap THIS WEEK / NEXT WEEK / PHASE ENDS** copy in `PhaseStrip.tsx` — `WEEK_THEMES` constant, hardcoded. Content team can revise without touching layout; revisit when per-week themes move to the backend curriculum schema.
+
+When wiring real progress, prefer **derive-on-read aggregation** over persisted progress fields (matches the Lexicon `daysCompleted` pattern — cache 60s, query `srs_cards` / `lexicon_progress`).
 
 ---
 
@@ -514,12 +531,12 @@ When persisting (localStorage, API, rehydrate):
 8. 🔨 Free vs Pro paywall logic — tier checks wired, upsell copy in progress
 9. 🔨 AI Writing grading (Anthropic integration; mock grading fallback live)
 10. AI Speaking grading
-11. Translation feature (per-phrase VN popover)
+11. ✅ Translation feature (per-phrase VN popover) — Atlas of Mistakes only; wrap any other surface in `<TranslatableArea>` to enable
 12. Weekly livestream embed + archive
 
 ### Post-launch
 
-13. Diagnostic onboarding flow
+13. ✅ Diagnostic onboarding flow — 5 L + 5 R + 1 W (speaking estimated until v2 audio capture)
 14. Full content fill — 48+ grammar lessons seeded, vocab/collocations/linking pending
 15. Cohort view (median progress, anonymized)
 16. Email automation (daily 7 AM, weekly digest)
@@ -566,7 +583,7 @@ When persisting (localStorage, API, rehydrate):
 - [ ] All copy in English, editorial voice
 - [ ] No hardcoded prices
 - [ ] Section separators use a single full-width `border-t border-line` (not `border-y`, not double hairlines)
-- [ ] Page content max-width is `1720px` on listing pages, `1440px` on reader/session pages
+- [ ] Page content max-width is `1720px`
 - [ ] Don't stack TanStack layout routes without an `<Outlet />` — `app.X.tsx` next to `app.X.$Y.tsx` makes the first a layout, and it MUST render `<Outlet />` or the child never mounts
 
 ---
@@ -645,9 +662,9 @@ Built on NestJS 11 + Mongoose. Root at `backend/`.
 
 When a Free user hits a Pro-gated feature:
 
-> **Mono label:** PRO — MEMBERSHIP REQUIRED  
-> **Fraunces h3:** Beyond this point, the examiner reads.  
-> **Body:** Your writing, graded within minutes. The diagnostic that finds your ceiling. Friday evenings in the live library. Meridian Pro continues the programme.  
+> **Mono label:** PRO — MEMBERSHIP REQUIRED
+> **Fraunces h3:** Beyond this point, the examiner reads.
+> **Body:** Your writing, graded within minutes. The diagnostic that finds your ceiling. Friday evenings in the live library. Meridian Pro continues the programme.
 > **CTA:** Continue the programme →
 
 Never "UNLOCK NOW!!!" or "Limited offer!!!". Quiet confidence.
@@ -676,5 +693,5 @@ Never "UNLOCK NOW!!!" or "Limited offer!!!". Quiet confidence.
 - B2B offering (corporate English training) — out of MVP scope
 
 
-
+"after the change, take a screenshot and verify the layout matches the spec"
 REMEMBER: The code you write will be reviewed by CHATGPT 5.4

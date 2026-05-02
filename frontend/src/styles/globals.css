@@ -20,6 +20,12 @@
   --color-sage: #6B7F5A;
   --color-ink-warm: #2A2622;
 
+  /* Lexicon state palette (extended for word states + featured cards) */
+  --color-teal: #5C7A6E;
+  --color-mustard: #C9A961;
+  --color-muted: #9B9588;
+  --color-tint: #FAEDE8;
+
   /* Editorial font families */
   --font-fraunces: 'Fraunces', Georgia, serif;
   --font-geist: 'Geist', system-ui, sans-serif;

@@ -3,6 +3,8 @@ import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { z } from 'zod'
 import type { BandLevel } from '@shared/schemas/practice'
 import { BandSelector } from '@/features/practice/components/BandSelector'
+import { useSkipDiagnostic } from '@/features/diagnostic/hooks/useSubmitDiagnostic'
+import { useProfile } from '@/features/practice/hooks/practice-queries'
 import { useSetBandMutation } from '@/features/practice/hooks/practice-mutations'
 import { useAuthStore } from '@/stores/auth-store'
 
@@ -28,11 +30,23 @@ function OnboardingBandPage() {
   const navigate = useNavigate()
   const { redirect: redirectTo } = Route.useSearch()
   const setBand = useSetBandMutation()
+  const skipDiagnostic = useSkipDiagnostic()
+  const profile = useProfile()
   const [selected, setSelected] = useState<BandLevel | null>(null)
 
   const handleContinue = async () => {
     if (!selected) return
     await setBand.mutateAsync(selected)
+    // Mark the diagnostic as skipped so the /app gate doesn't re-prompt.
+    // Safe to call even if user has previously completed (won't unset
+    // diagnosticCompletedAt — both fields can coexist).
+    if (!profile?.diagnosticCompletedAt && !profile?.diagnosticSkippedAt) {
+      try {
+        await skipDiagnostic.mutateAsync()
+      } catch {
+        // Non-fatal; gate will re-prompt on next visit.
+      }
+    }
     const target = redirectTo && redirectTo.startsWith('/') ? redirectTo : '/app'
     void navigate({ to: target })
   }

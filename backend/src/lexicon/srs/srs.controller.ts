@@ -60,6 +60,17 @@ export class SrsController {
     })
   }
 
+  @Get('streak')
+  async streak(@CurrentUser() user: AuthenticatedUser) {
+    const userDoc = await this.userModel
+      .findById(new Types.ObjectId(user.userId), { userTimezone: 1 })
+      .lean()
+      .exec()
+    const userTimezone = userDoc?.userTimezone ?? 'UTC'
+    const days = await this.srsService.findUserStreak(user.userId, userTimezone)
+    return { days }
+  }
+
   @Get()
   async list(
     @CurrentUser() user: AuthenticatedUser,

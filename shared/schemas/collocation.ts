@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { LessonRegisterSchema } from './lesson'
+import { FrequencyTierSchema } from './vocabulary'
 
 /**
  * The structural pattern a collocation follows. Used to group entries on the
@@ -45,5 +46,7 @@ export const CollocationSchema = z.object({
   alternatives: z.array(z.string().min(1)).max(4).default([]),
   /** Optional usage caveat — e.g. "uncountable", "always plural", "AmE only". */
   note: z.string().optional(),
+  /** BNC/COCA frequency tier — see LEXICON-LEVEL-SPEC.md. */
+  frequencyTier: FrequencyTierSchema.optional(),
 })
 export type Collocation = z.infer<typeof CollocationSchema>

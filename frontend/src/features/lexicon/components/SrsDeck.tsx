@@ -239,9 +239,9 @@ function NewCardBody({ item, revealed }: { item: LexiconItem; revealed: boolean 
           </>
         )}
       </p>
-      <h3 className="mt-3 font-fraunces text-[clamp(36px,5vw,64px)] italic leading-none text-ink">
+      <h3 className="mt-3 font-fraunces text-[clamp(28px,4vw,44px)] leading-none text-ink capitalize">
         {headword}
-        <em className="not-italic text-claret">.</em>
+        <span className="text-claret">.</span>
       </h3>
 
       {revealed && (

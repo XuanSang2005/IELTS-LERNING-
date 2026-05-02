@@ -14,8 +14,10 @@ import { VocabularyModule } from './vocabulary/vocabulary.module'
 import { CollocationsModule } from './collocations/collocations.module'
 import { LinkingModule } from './linking/linking.module'
 import { DailyModule } from './daily/daily.module'
+import { DiagnosticModule } from './diagnostic/diagnostic.module'
 import { PaymentsModule } from './payments/payments.module'
 import { PricingModule } from './pricing/pricing.module'
+import { TranslationModule } from './translation/translation.module'
 
 @Module({
   imports: [
@@ -39,8 +41,10 @@ import { PricingModule } from './pricing/pricing.module'
     CollocationsModule,
     LinkingModule,
     DailyModule,
+    DiagnosticModule,
     PaymentsModule,
     PricingModule,
+    TranslationModule,
   ],
   controllers: [AppController],
 })

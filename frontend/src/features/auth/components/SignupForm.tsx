@@ -32,8 +32,12 @@ export function SignupForm({ redirectTo }: SignupFormProps) {
         void migrateLocalPracticeIfPresent()
         setSuccess(true)
         setTimeout(() => {
-          const onboardUrl = `/onboarding/band?redirect=${encodeURIComponent(redirectTo)}`
+          // Send first-time signups to the diagnostic. The diagnostic landing
+          // offers a "skip → /onboarding/band" link for users who already know
+          // their band; the gate at /app/* respects either path completing.
+          const onboardUrl = `/onboarding/diagnostic`
           window.location.href = onboardUrl
+          void redirectTo
         }, 1500)
       } catch (err) {
         setSubmitError(authErrorCopy(err, 'signup'))

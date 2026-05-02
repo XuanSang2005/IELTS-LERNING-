@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { DiagnosticResultSchema } from './diagnostic'
 
 export const DisciplineSchema = z.enum(['grammar', 'vocabulary', 'collocations', 'linking'])
 export type Discipline = z.infer<typeof DisciplineSchema>
@@ -182,6 +183,14 @@ export const UserProfileSchema = z.object({
   currentBand: BandRangeSchema,
   performance: PerformanceMetricsSchema,
   lastBandReassessment: z.string().nullable(),
+  /** Set when the user completes the diagnostic onboarding flow. */
+  diagnosticCompletedAt: z.string().datetime().nullable().default(null),
+  /** Set when the user explicitly chooses to skip the diagnostic
+   * (self-picks band via /onboarding/band). Used by the /app gate so we
+   * don't re-prompt them. */
+  diagnosticSkippedAt: z.string().datetime().nullable().default(null),
+  /** Persisted scoring detail from the most recent diagnostic. */
+  diagnosticResult: DiagnosticResultSchema.nullable().default(null),
 })
 export type UserProfile = z.infer<typeof UserProfileSchema>
 

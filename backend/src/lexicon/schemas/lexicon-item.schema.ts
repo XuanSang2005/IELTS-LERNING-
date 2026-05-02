@@ -52,6 +52,8 @@ export const LexiconItemBaseSchema = new Schema(
 
 LexiconItemBaseSchema.index({ discipline: 1, level: 1, week: 1, day: 1 })
 
+const FREQUENCY_TIER_ENUM = ['K1', 'K2', 'K3', 'K4', 'K5', 'K6+', 'AWL'] as const
+
 /** Vocabulary item — extends VocabWord shape. */
 export const VocabularyItemSubSchema = new Schema(
   {
@@ -72,6 +74,16 @@ export const VocabularyItemSubSchema = new Schema(
       required: true,
     },
     synonyms: { type: [SynonymSubSchema], required: true },
+    /** Optional per LEXICON-LEVEL-SPEC.md — required by content policy for new items. */
+    frequencyTier: { type: String, enum: FREQUENCY_TIER_ENUM },
+    /** Required by content policy for Advanced + Mastery; optional otherwise. */
+    connotationNote: { type: String },
+    /** IPA pronunciation, optional. */
+    pronunciationIPA: { type: String },
+    /** Brief etymology, optional. */
+    etymology: { type: String },
+    /** Audio clip URL, optional. */
+    audioUrl: { type: String },
   },
   { _id: false, discriminatorKey: 'discipline' },
 )
@@ -82,6 +94,7 @@ export const CollocationItemSubSchema = new Schema(
     phrase: { type: String, required: true, index: true },
     pattern: {
       type: String,
+      // Sync with shared/schemas/collocation.ts CollocationPatternSchema (15 patterns).
       enum: [
         'verb-noun',
         'adjective-noun',
@@ -91,6 +104,13 @@ export const CollocationItemSubSchema = new Schema(
         'adverb-adjective',
         'verb-adverb',
         'verb',
+        'noun-adjective',
+        'verb-adjective',
+        'noun-preposition',
+        'preposition',
+        'adverb-verb',
+        'noun',
+        'adjective',
       ],
       required: true,
     },
@@ -100,6 +120,8 @@ export const CollocationItemSubSchema = new Schema(
     topic: { type: String },
     alternatives: { type: [String], default: [] },
     note: { type: String },
+    /** Optional per LEXICON-LEVEL-SPEC.md — required by content policy for new items. */
+    frequencyTier: { type: String, enum: FREQUENCY_TIER_ENUM },
   },
   { _id: false, discriminatorKey: 'discipline' },
 )
@@ -177,6 +199,11 @@ export function docToVocabularyItem(doc: RawLexiconDoc): VocabularyLexiconItem {
     topic: doc.topic as string | undefined,
     frequency: doc.frequency as VocabularyLexiconItem['frequency'],
     synonyms: doc.synonyms as VocabularyLexiconItem['synonyms'],
+    frequencyTier: doc.frequencyTier as VocabularyLexiconItem['frequencyTier'],
+    connotationNote: doc.connotationNote as string | undefined,
+    pronunciationIPA: doc.pronunciationIPA as string | undefined,
+    etymology: doc.etymology as string | undefined,
+    audioUrl: doc.audioUrl as string | undefined,
     level: doc.level,
     week: doc.week as VocabularyLexiconItem['week'],
     day: doc.day as VocabularyLexiconItem['day'],
@@ -195,6 +222,7 @@ export function docToCollocationItem(doc: RawLexiconDoc): CollocationLexiconItem
     topic: doc.topic as string | undefined,
     alternatives: (doc.alternatives as string[]) ?? [],
     note: doc.note as string | undefined,
+    frequencyTier: doc.frequencyTier as CollocationLexiconItem['frequencyTier'],
     level: doc.level,
     week: doc.week as CollocationLexiconItem['week'],
     day: doc.day as CollocationLexiconItem['day'],
