@@ -46,7 +46,19 @@ export async function getCurrentUser(): Promise<User | null> {
   }
 }
 
-export function logout(): void {
+export async function logout(): Promise<void> {
+  const refreshToken = useAuthStore.getState().refreshToken
+  // Best-effort revoke. We always clear local state regardless of network result.
+  if (refreshToken) {
+    try {
+      await apiFetch<void>('/auth/logout', {
+        method: 'POST',
+        body: JSON.stringify({ refreshToken }),
+      })
+    } catch {
+      // Ignore — local clear below still happens.
+    }
+  }
   useAuthStore.getState().clear()
   if (typeof window !== 'undefined') {
     localStorage.removeItem(LEGACY_PRACTICE_KEY)

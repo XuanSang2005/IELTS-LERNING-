@@ -56,7 +56,7 @@ export function Nav({ minimal = false }: { minimal?: boolean } = {}) {
     .toUpperCase()
 
   const handleSignOut = () => {
-    logout()
+    void logout()
     setMenuOpen(false)
     void navigate({ to: '/' })
   }

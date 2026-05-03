@@ -7,6 +7,7 @@ import {
   STEP_MINUTES_BY_LEVEL,
   type DailyStepKind,
 } from '@/features/daily/data/step-config'
+import { useYesterdayReview } from '@/features/lexicon/hooks/useYesterdayReview'
 import { DisciplineShortcuts } from './DisciplineShortcuts'
 import { SIGNATURE_BUTTON_CLASS, SignatureContent } from './primitives/SignatureButton'
 import { TEXT_LINK_CLASS, TextLinkContent } from './primitives/TextLink'
@@ -17,12 +18,6 @@ const EDITORS_NOTES: Record<BandLevel, string> = {
   advanced: 'Yesterday’s drills showed hesitation. We’ll loop those before the writing task.',
   mastery: 'Examiner-level register. The habits of an eight, sustained over twelve sentences.',
 }
-
-const YESTERDAY_ITEMS: ReadonlyArray<{ text: string; meta: string }> = [
-  { text: 'discernible', meta: 'C1 · adj.' },
-  { text: 'a meaningful contribution', meta: 'collocation' },
-  { text: 'notwithstanding', meta: 'linking · contrast' },
-]
 
 interface TodaySessionProps {
   level: BandLevel
@@ -41,6 +36,14 @@ export function TodaySession({ level, stepsDone, weekNumber }: TodaySessionProps
   const editorsNote = EDITORS_NOTES[level]
   const totalMinutes = ESTIMATED_MINUTES_BY_LEVEL[level]
   const stepMinutes = STEP_MINUTES_BY_LEVEL[level]
+
+  // Pull yesterday's introduced items from SRS. Hide the band entirely on
+  // Day 1 (no history at all) — first-time users have nothing to review.
+  const yesterdayQuery = useYesterdayReview()
+  const yesterday = yesterdayQuery.data
+  const showYesterdayBand = Boolean(
+    yesterday && yesterday.hasAnyHistory && yesterday.items.length > 0,
+  )
 
   // Determine the focal step (current next step, or the final step if complete)
   const focalIndex = allDone ? totalSteps - 1 : Math.min(stepsDone, totalSteps - 1)
@@ -193,21 +196,25 @@ export function TodaySession({ level, stepsDone, weekNumber }: TodaySessionProps
             </div>
           </div>
 
-          {/* ── FROM YESTERDAY (compact band) ── */}
-          <div className="border-t border-line px-6 py-5 md:px-10">
-            <p className="flex flex-wrap items-baseline gap-x-3 gap-y-2 font-mono text-[10px] uppercase tracking-[0.32em] text-graphite">
-              <span className="text-claret">◆ FROM YESTERDAY</span>
-              {YESTERDAY_ITEMS.map((item, i) => (
-                <span key={item.text} className="flex items-baseline gap-2">
-                  {i > 0 && <span className="text-line">·</span>}
-                  <span className="font-fraunces text-[14px] normal-case tracking-normal text-ink">
-                    &ldquo;{item.text}&rdquo;
+          {/* ── FROM YESTERDAY (compact band) ──
+             Hidden on Day 1 (no SRS history yet) and on rest days
+             (had history but introduced nothing yesterday). */}
+          {showYesterdayBand && (
+            <div className="border-t border-line px-6 py-5 md:px-10">
+              <p className="flex flex-wrap items-baseline gap-x-3 gap-y-2 font-mono text-[10px] uppercase tracking-[0.32em] text-graphite">
+                <span className="text-claret">◆ FROM YESTERDAY</span>
+                {yesterday!.items.map((item, i) => (
+                  <span key={item.itemId} className="flex items-baseline gap-2">
+                    {i > 0 && <span className="text-line">·</span>}
+                    <span className="font-fraunces text-[14px] normal-case tracking-normal text-ink">
+                      &ldquo;{item.text}&rdquo;
+                    </span>
+                    <span className="text-graphite/70">{item.meta}</span>
                   </span>
-                  <span className="text-graphite/70">{item.meta}</span>
-                </span>
-              ))}
-            </p>
-          </div>
+                ))}
+              </p>
+            </div>
+          )}
 
           {/* ── BOTTOM CTA CLUSTER ── */}
           <div className="flex flex-wrap items-center justify-center gap-7 border-t border-line px-6 py-6 md:px-10 md:py-7">

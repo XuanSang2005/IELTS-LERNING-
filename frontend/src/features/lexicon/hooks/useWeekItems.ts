@@ -5,11 +5,14 @@ import type { BandLevel } from '@shared/schemas/practice'
 import { apiFetch } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
 
-export function useWeekItems(params: {
-  discipline: LexiconDiscipline
-  level: BandLevel
-  week: number
-}) {
+export function useWeekItems(
+  params: {
+    discipline: LexiconDiscipline
+    level: BandLevel
+    week: number
+  },
+  options: { enabled?: boolean } = {},
+) {
   const token = useAuthStore((s) => s.token)
   const { discipline, level, week } = params
   return useQuery({
@@ -18,7 +21,7 @@ export function useWeekItems(params: {
       apiFetch<LexiconItem[]>(
         `/lexicon/items?discipline=${discipline}&level=${level}&week=${week}`,
       ),
-    enabled: Boolean(token),
+    enabled: Boolean(token) && (options.enabled ?? true),
     staleTime: 10 * 60_000,
   })
 }

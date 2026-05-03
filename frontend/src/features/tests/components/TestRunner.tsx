@@ -415,7 +415,7 @@ function ReadingBody({
           <PassageReader passage={activePassage} />
         </section>
         <section
-          className={`${mobileTab === 'questions' ? 'block' : 'hidden'} overflow-y-auto pb-6 md:block md:pl-4 lg:pb-8 lg:pl-6`}
+          className={`${mobileTab === 'questions' ? 'block' : 'hidden'} overflow-y-auto pb-6 pt-6 md:block md:pl-4 lg:pb-8 lg:pl-6 lg:pt-10`}
         >
           {activeGroup && (
             <div>

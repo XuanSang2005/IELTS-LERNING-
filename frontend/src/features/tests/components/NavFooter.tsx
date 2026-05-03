@@ -27,6 +27,7 @@ export function NavFooter({
   canPrev,
   canNext,
 }: NavFooterProps) {
+  const isActiveFlagged = activeQuestionId ? Boolean(flagged[activeQuestionId]) : false
   return (
     <div className="shrink-0 border-t border-line bg-ivory">
       <div className="flex w-full flex-wrap items-center justify-between gap-3 px-4 py-3 md:gap-4 md:px-10 md:py-4 xl:px-14">
@@ -59,9 +60,9 @@ export function NavFooter({
                 key={q.id}
                 type="button"
                 onClick={() => onJump(q.id)}
-                title={`Question ${q.number}`}
+                title={`Question ${q.number}${isFlagged ? ' (flagged)' : ''}`}
                 aria-label={`Question ${q.number}${answered ? ' answered' : ''}${isFlagged ? ' flagged' : ''}`}
-                className={`flex h-11 w-11 shrink-0 snap-start items-center justify-center border font-mono text-[14px] transition-colors md:h-9 md:w-9 md:text-[13px] ${
+                className={`relative flex h-11 w-11 shrink-0 snap-start items-center justify-center border font-mono text-[14px] transition-colors md:h-9 md:w-9 md:text-[13px] ${
                   active
                     ? 'border-ink bg-ink text-ivory'
                     : answered
@@ -72,6 +73,12 @@ export function NavFooter({
                 }`}
               >
                 {q.number}
+                {isFlagged && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute -right-px -top-px h-0 w-0 border-b-8 border-l-8 border-b-transparent border-l-sage"
+                  />
+                )}
               </button>
             )
           })}
@@ -82,9 +89,18 @@ export function NavFooter({
             type="button"
             onClick={onFlagActive}
             disabled={!activeQuestionId}
-            className="border border-line px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-graphite transition-colors hover:border-sage hover:text-sage disabled:cursor-not-allowed disabled:opacity-50"
+            aria-pressed={isActiveFlagged}
+            title={isActiveFlagged ? 'Remove flag from this question' : 'Flag this question for review'}
+            className={`inline-flex items-center gap-2 border px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.22em] transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+              isActiveFlagged
+                ? 'border-sage bg-sage/10 text-sage hover:bg-sage hover:text-ivory'
+                : 'border-line text-graphite hover:border-sage hover:text-sage'
+            }`}
           >
-            FLAG
+            <span aria-hidden="true" className={isActiveFlagged ? 'text-sage' : 'text-line'}>
+              ◆
+            </span>
+            {isActiveFlagged ? 'FLAGGED' : 'FLAG'}
           </button>
           <button
             type="button"

@@ -1,11 +1,15 @@
-import { Body, Controller, Get, NotFoundException, Post, UseGuards, UsePipes } from '@nestjs/common'
+import { Body, Controller, Get, HttpCode, NotFoundException, Post, UseGuards, UsePipes } from '@nestjs/common'
 import {
   AuthResponseSchema,
   LoginDtoSchema,
+  LogoutDtoSchema,
+  RefreshDtoSchema,
   RegisterDtoSchema,
   type AuthResponse,
   type AuthUser,
   type LoginDto,
+  type LogoutDto,
+  type RefreshDto,
   type RegisterDto,
 } from '@shared/schemas/auth'
 import { AuthService } from './auth.service'
@@ -33,6 +37,21 @@ export class AuthController {
   async login(@Body() dto: LoginDto): Promise<AuthResponse> {
     const res = await this.auth.login(dto)
     return AuthResponseSchema.parse(res)
+  }
+
+  @Post('refresh')
+  @HttpCode(200)
+  @UsePipes(new ZodValidationPipe(RefreshDtoSchema))
+  async refresh(@Body() dto: RefreshDto): Promise<AuthResponse> {
+    const res = await this.auth.refresh(dto.refreshToken)
+    return AuthResponseSchema.parse(res)
+  }
+
+  @Post('logout')
+  @HttpCode(204)
+  @UsePipes(new ZodValidationPipe(LogoutDtoSchema))
+  async logout(@Body() dto: LogoutDto): Promise<void> {
+    await this.auth.logout(dto.refreshToken)
   }
 
   @Get('me')

@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import type {
+  BandLevel,
   DailyLog,
   NoticingItem,
   PracticeStateShape,
@@ -24,6 +25,17 @@ export function usePracticeState() {
 
 export function useProfile(): UserProfile | undefined {
   return usePracticeState().data?.profile
+}
+
+/**
+ * Single source of truth for the user's BandLevel across Grammar, Lexicon,
+ * and Daily Loop. Reads `profile.currentBand.level`, set by the diagnostic
+ * (or by `/onboarding/band` Recalibrate). Falls back to `'intermediate'` —
+ * matches the default in `defaultProfile()` on the backend — for the brief
+ * window between mount and the first `/practice/state` response.
+ */
+export function useUserBandLevel(): BandLevel {
+  return useProfile()?.currentBand.level ?? 'intermediate'
 }
 
 export function useNoticingItems(): NoticingItem[] {

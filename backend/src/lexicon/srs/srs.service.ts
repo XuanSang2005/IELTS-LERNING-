@@ -236,6 +236,36 @@ export class SrsService {
     return doc?.introducedAt ?? null
   }
 
+  /**
+   * Returns SRS cards whose `introducedAt` falls within [start, end]. Used
+   * by the "From yesterday" review band on the dashboard.
+   */
+  async findCardsIntroducedInRange(params: {
+    userId: string
+    startUtc: Date
+    endUtc: Date
+  }): Promise<SrsCard[]> {
+    const userObjectId = new Types.ObjectId(params.userId)
+    const docs = await this.cardModel
+      .find({
+        userId: userObjectId,
+        introducedAt: { $gte: params.startUtc, $lte: params.endUtc },
+      })
+      .sort({ introducedAt: 1 })
+      .exec()
+    return docs.map(docToCard)
+  }
+
+  /** Cheap existence check — has the user ever introduced any SRS card? */
+  async hasAnyCards(userId: string): Promise<boolean> {
+    const userObjectId = new Types.ObjectId(userId)
+    const found = await this.cardModel
+      .findOne({ userId: userObjectId }, { _id: 1 })
+      .lean()
+      .exec()
+    return Boolean(found)
+  }
+
   async countInteractionsInRange(params: {
     userId: string
     discipline: LexiconDiscipline

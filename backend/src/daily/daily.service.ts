@@ -7,6 +7,7 @@ import type {
   DailyReviewSet,
   DailyUnit,
 } from '@shared/schemas/daily-unit'
+import { SrsService } from '../lexicon/srs/srs.service'
 import { DailyUnitDoc, DailyUnitDocument } from './schemas/daily-unit.schema'
 import { DAILY_UNITS_SEED } from './data/daily-units-seed'
 
@@ -44,6 +45,7 @@ function previousDay(day: DailyDayNumber): DailyDayNumber {
 export class DailyService implements OnModuleInit {
   constructor(
     @InjectModel(DailyUnitDoc.name) private readonly model: Model<DailyUnitDocument>,
+    private readonly srsService: SrsService,
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -81,10 +83,19 @@ export class DailyService implements OnModuleInit {
 
   /**
    * Step 1 review surface: yesterday's vocab deck + grammar focus only.
-   * Returns `null` when yesterday's unit is missing (e.g. the user is on
-   * day 1 of their first cycle and yesterday's slot is unseeded).
+   * Returns `null` when:
+   *  - yesterday's unit is missing in the seed, OR
+   *  - the user has no learning history yet (first day — there is nothing
+   *    to review). Detected via the absence of any SRS card.
    */
-  async findReviewSet(level: BandLevel, isoDate: string): Promise<DailyReviewSet | null> {
+  async findReviewSet(
+    userId: string,
+    level: BandLevel,
+    isoDate: string,
+  ): Promise<DailyReviewSet | null> {
+    const hasHistory = await this.srsService.hasAnyCards(userId)
+    if (!hasHistory) return null
+
     const today = dailyDayFromIsoDate(isoDate)
     const yesterday = previousDay(today)
     const unit = await this.findByDayAndLevel(yesterday, level)

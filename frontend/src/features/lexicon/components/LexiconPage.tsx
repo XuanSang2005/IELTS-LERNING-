@@ -1,12 +1,11 @@
 import { useNavigate } from '@tanstack/react-router'
 import type { LexiconDiscipline } from '@shared/schemas/lexicon'
 import { Polaroid } from '@/components/ui/Polaroid'
+import { useUserBandLevel } from '@/features/practice/hooks/practice-queries'
 import { Route as LexiconIndexRoute } from '@/routes/app.lexicon.index'
 import { useLexiconDiscipline } from '@/stores/lexicon-discipline-store'
-import { useLexiconLevel } from '@/stores/lexicon-level-store'
 import { DISCIPLINE_CONFIG } from '../data/discipline-config'
 import { DisciplineNav } from './DisciplineNav'
-import { LexiconLevelSelector } from './LexiconLevelSelector'
 import { LexiconRoadmap } from './LexiconRoadmap'
 import { RetentionPanel } from './RetentionPanel'
 
@@ -19,9 +18,7 @@ export function LexiconPage() {
   // URL search param wins; falls back to persisted store choice.
   const active: LexiconDiscipline = search.discipline ?? persistedActive
 
-  const levelByDiscipline = useLexiconLevel((s) => s.byDiscipline)
-  const setLevel = useLexiconLevel((s) => s.setLevel)
-  const level = levelByDiscipline[active]
+  const level = useUserBandLevel()
 
   function setActive(next: LexiconDiscipline) {
     setPersistedActive(next)
@@ -78,8 +75,6 @@ export function LexiconPage() {
           </p>
         </div>
       </div>
-
-      <LexiconLevelSelector value={level} onChange={(next) => setLevel(active, next)} />
 
       {/* Colophon */}
       <section className="border-b border-line">

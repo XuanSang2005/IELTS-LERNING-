@@ -2,7 +2,9 @@ import { useMemo, useState } from 'react'
 import type { LexiconDiscipline } from '@shared/schemas/lexicon'
 import type { BandLevel } from '@shared/schemas/practice'
 import { useDayItems } from '../hooks/useDayItems'
+import { useWeekItems } from '../hooks/useWeekItems'
 import { buildPracticeExercises, type PracticeExercise } from '../utils/exercise-builders'
+import { ExerciseReview } from './ExerciseReview'
 
 interface DayReviewProps {
   discipline: LexiconDiscipline
@@ -21,11 +23,18 @@ const TARGET_QUESTIONS = 10
  */
 export function DayReview({ discipline, level, week, day }: DayReviewProps) {
   const itemsQuery = useDayItems({ discipline, level, week, day })
+  // Same widening as DayPractice — linking needs the week pool for distractors.
+  const weekItemsQuery = useWeekItems(
+    { discipline, level, week },
+    { enabled: discipline === 'linking' },
+  )
 
   const exercises = useMemo<PracticeExercise[]>(() => {
     if (!itemsQuery.data) return []
-    return buildPracticeExercises(itemsQuery.data).slice(0, TARGET_QUESTIONS)
-  }, [itemsQuery.data])
+    const pool =
+      discipline === 'linking' && weekItemsQuery.data ? weekItemsQuery.data : itemsQuery.data
+    return buildPracticeExercises(itemsQuery.data, pool).slice(0, TARGET_QUESTIONS)
+  }, [itemsQuery.data, weekItemsQuery.data, discipline])
 
   const [activeIdx, setActiveIdx] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
@@ -55,9 +64,8 @@ export function DayReview({ discipline, level, week, day }: DayReviewProps) {
           ◆ REVIEW
         </p>
         <p className="mt-4 max-w-[52ch] mx-auto font-fraunces text-[22px] italic leading-relaxed text-graphite">
-          {discipline === 'vocabulary'
-            ? "No items to recap yet. Once today's vocabulary is seeded, ten quick questions will appear here."
-            : `Recap for ${discipline} ships in a later iteration.`}
+          No items to recap yet. Once today's {discipline} is seeded, a short set of
+          recall questions will appear here.
         </p>
       </div>
     )
@@ -73,33 +81,37 @@ export function DayReview({ discipline, level, week, day }: DayReviewProps) {
 
   if (done) {
     return (
-      <div className="mx-auto max-w-[640px] py-16 text-center">
-        <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-claret">
-          ◆ RECAP COMPLETE
-        </p>
-        <p className="mt-6 font-fraunces text-[clamp(64px,8vw,96px)] leading-none text-ink">
-          {correctCount}
-          <span className="text-graphite"> / {total}</span>
-        </p>
-        <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.28em] text-graphite">
-          {score}% · QUICK RECALL
-        </p>
-        <p className="mt-6 max-w-[52ch] mx-auto font-fraunces text-[20px] italic leading-relaxed text-graphite">
-          The full spaced-repetition pass lives in the Daily Loop. This recap doesn't change the
-          schedule — it tests whether today's items have settled.
-        </p>
-        <button
-          type="button"
-          onClick={() => {
-            setDone(false)
-            setAnswers({})
-            setRevealedIds(new Set())
-            setActiveIdx(0)
-          }}
-          className="mt-10 border border-ink px-6 py-3 font-mono text-[11px] uppercase tracking-[0.28em] text-ink transition-colors hover:bg-ink hover:text-ivory"
-        >
-          Recap again
-        </button>
+      <div className="py-8 md:py-10">
+        <div className="mx-auto max-w-[640px] text-center">
+          <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-claret">
+            ◆ RECAP COMPLETE
+          </p>
+          <p className="mt-6 font-fraunces text-[clamp(64px,8vw,96px)] leading-none text-ink">
+            {correctCount}
+            <span className="text-graphite"> / {total}</span>
+          </p>
+          <p className="mt-3 font-mono text-[11px] uppercase tracking-[0.28em] text-graphite">
+            {score}% · QUICK RECALL
+          </p>
+          <p className="mt-6 max-w-[52ch] mx-auto font-fraunces text-[20px] italic leading-relaxed text-graphite">
+            The full spaced-repetition pass lives in the Daily Loop. This recap doesn't change the
+            schedule — it tests whether today's items have settled.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setDone(false)
+              setAnswers({})
+              setRevealedIds(new Set())
+              setActiveIdx(0)
+            }}
+            className="mt-10 border border-ink px-6 py-3 font-mono text-[11px] uppercase tracking-[0.28em] text-ink transition-colors hover:bg-ink hover:text-ivory"
+          >
+            Recap again
+          </button>
+        </div>
+
+        <ExerciseReview exercises={exercises} answers={answers} label="RECAP KEY" />
       </div>
     )
   }
@@ -130,7 +142,7 @@ export function DayReview({ discipline, level, week, day }: DayReviewProps) {
         </blockquote>
       )}
 
-      <ul className="mt-8 grid grid-cols-1 gap-3 md:grid-cols-2">
+      <ul className="mt-8 grid grid-cols-1 gap-3 md:auto-rows-fr md:grid-cols-2">
         {active.options.map((opt) => {
           const selected = userChoice === opt.id
           const isThisCorrect = opt.isCorrect
@@ -143,12 +155,16 @@ export function DayReview({ discipline, level, week, day }: DayReviewProps) {
             visualState = 'border-ink bg-ink text-ivory'
           }
           return (
-            <li key={opt.id}>
+            <li key={opt.id} className="h-full">
               <button
                 type="button"
                 disabled={revealed}
-                onClick={() => setAnswers((prev) => ({ ...prev, [active.id]: opt.id }))}
-                className={`flex w-full items-baseline justify-between gap-4 border px-5 py-4 text-left font-fraunces text-[19px] leading-snug transition-colors disabled:cursor-default md:text-[20px] ${visualState}`}
+                onClick={() => {
+                  if (revealed) return
+                  setAnswers((prev) => ({ ...prev, [active.id]: opt.id }))
+                  setRevealedIds((prev) => new Set(prev).add(active.id))
+                }}
+                className={`flex h-full w-full items-center justify-between gap-4 border px-5 py-4 text-left font-fraunces text-[19px] leading-snug transition-colors disabled:cursor-default md:text-[20px] ${visualState}`}
                 aria-pressed={selected}
               >
                 <span>{opt.text}</span>
@@ -168,6 +184,22 @@ export function DayReview({ discipline, level, week, day }: DayReviewProps) {
         })}
       </ul>
 
+      {revealed && (
+        <div className="mt-6 border-l-2 border-claret pl-5">
+          <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-claret">
+            ◆ {isCorrect ? 'CORRECT' : 'INCORRECT'}
+          </p>
+          {!isCorrect && (
+            <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.25em] text-sage">
+              CORRECT ANSWER ·{' '}
+              <span className="text-ink">
+                {active.options.find((o) => o.isCorrect)?.text}
+              </span>
+            </p>
+          )}
+        </div>
+      )}
+
       <div className="mt-10 flex items-center justify-between gap-4 border-t border-line pt-6">
         <button
           type="button"
@@ -177,24 +209,6 @@ export function DayReview({ discipline, level, week, day }: DayReviewProps) {
         >
           ← PREV
         </button>
-
-        {!revealed && userChoice && (
-          <button
-            type="button"
-            onClick={() => setRevealedIds((prev) => new Set(prev).add(active.id))}
-            className="border border-claret px-5 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-claret transition-colors hover:bg-claret hover:text-ivory"
-          >
-            REVEAL
-          </button>
-        )}
-
-        {revealed && (
-          <p className="font-mono text-[11px] uppercase tracking-[0.28em]">
-            <span className={isCorrect ? 'text-sage' : 'text-claret'}>
-              {isCorrect ? 'CORRECT' : 'INCORRECT'}
-            </span>
-          </p>
-        )}
 
         {activeIdx < total - 1 ? (
           <button

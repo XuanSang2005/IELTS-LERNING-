@@ -56,7 +56,7 @@ export function AppNav() {
   }, [menuOpen])
 
   const handleSignOut = () => {
-    logout()
+    void logout()
     setMenuOpen(false)
     void navigate({ to: '/login' })
   }

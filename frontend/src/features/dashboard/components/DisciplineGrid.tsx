@@ -54,11 +54,16 @@ export function DisciplineGrid({ profile }: DisciplineGridProps) {
             const completed = Math.min(rawCompleted, total)
             const pct = Math.round((completed / total) * 100)
             const started = completed > 0
+            const linkProps =
+              d === 'grammar'
+                ? ({ to: '/app/grammar' } as const)
+                : d === 'vocabulary'
+                  ? ({ to: '/app/lexicon' } as const)
+                  : ({ to: '/app/lexicon', search: { discipline: d } } as const)
             return (
               <Link
                 key={d}
-                to="/study"
-                search={{ discipline: d }}
+                {...linkProps}
                 className="group relative flex flex-col gap-5 overflow-hidden bg-ivory p-7 transition-colors duration-200 hover:bg-bone/60"
               >
                 {/* Watermark numeral — top-right, faded */}

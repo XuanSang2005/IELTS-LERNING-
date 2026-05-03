@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { SrsDeck } from '@/features/lexicon/components/SrsDeck'
 import { useTodayQueue } from '@/features/lexicon/hooks/useTodayQueue'
-import { useLexiconLevel } from '@/stores/lexicon-level-store'
+import { useUserBandLevel } from '@/features/practice/hooks/practice-queries'
 import { DAILY_STEPS } from '../data/step-config'
 import { DailyShell } from './DailyShell'
 
@@ -19,7 +19,7 @@ interface Step4VocabProps {
  * user's persisted level choice picks which content tier surfaces.
  */
 export function Step4Vocab({ onAdvance, onPrev }: Step4VocabProps) {
-  const level = useLexiconLevel((s) => s.byDiscipline.vocabulary)
+  const level = useUserBandLevel()
   const queue = useTodayQueue('vocabulary', level)
 
   const total = (queue.data?.newItems.length ?? 0) + (queue.data?.dueReviews.length ?? 0)

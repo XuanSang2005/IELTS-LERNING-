@@ -1,11 +1,9 @@
 import { Polaroid } from '@/components/ui/Polaroid'
-import { useGrammarLevel } from '@/stores/grammar-level-store'
-import { LevelSelector } from './LevelSelector'
+import { useUserBandLevel } from '@/features/practice/hooks/practice-queries'
 import { PhasesRoadmap } from './PhasesRoadmap'
 
 export function GrammarPage() {
-  const level = useGrammarLevel((s) => s.level)
-  const setLevel = useGrammarLevel((s) => s.setLevel)
+  const level = useUserBandLevel()
 
   return (
     <div className="w-full pb-20">
@@ -43,8 +41,6 @@ export function GrammarPage() {
           </div>
         </div>
       </header>
-
-      <LevelSelector value={level} onChange={setLevel} />
 
       {/* Colophon — how the twelve weeks run */}
       <section className="border-b border-line">

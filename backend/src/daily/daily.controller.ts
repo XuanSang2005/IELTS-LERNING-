@@ -8,6 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import type { BandLevel } from '@shared/schemas/practice'
+import { CurrentUser, type AuthenticatedUser } from '../common/current-user.decorator'
 import { JwtAuthGuard } from '../common/jwt-auth.guard'
 import { DailyService } from './daily.service'
 
@@ -52,10 +53,14 @@ export class DailyController {
    * slot is unseeded; the frontend renders an empty-state in that case.
    */
   @Get('review')
-  async review(@Query('level') level?: string, @Query('date') date?: string) {
+  async review(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query('level') level?: string,
+    @Query('date') date?: string,
+  ) {
     const lvl = parseLevel(level)
     const iso = parseIsoDate(date)
-    const review = await this.service.findReviewSet(lvl, iso)
+    const review = await this.service.findReviewSet(user.userId, lvl, iso)
     return { review }
   }
 

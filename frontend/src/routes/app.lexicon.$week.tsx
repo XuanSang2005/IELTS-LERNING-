@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { z } from 'zod'
 import { LexiconDisciplineSchema } from '@shared/schemas/lexicon'
 import { WeekPage } from '@/features/lexicon/components/WeekPage'
-import { useLexiconLevel } from '@/stores/lexicon-level-store'
+import { useUserBandLevel } from '@/features/practice/hooks/practice-queries'
 
 const searchSchema = z.object({
   discipline: LexiconDisciplineSchema.optional().default('vocabulary'),
@@ -23,8 +23,7 @@ export const Route = createFileRoute('/app/lexicon/$week')({
 function WeekRoute() {
   const { week } = Route.useParams()
   const search = Route.useSearch()
-  const levelByDiscipline = useLexiconLevel((s) => s.byDiscipline)
-  const level = levelByDiscipline[search.discipline]
+  const level = useUserBandLevel()
   const weekNumber = Number(week)
 
   if (!Number.isInteger(weekNumber) || weekNumber < 1 || weekNumber > 12) {

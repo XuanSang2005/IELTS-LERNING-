@@ -35,6 +35,17 @@ export type AuthUser = User
 
 export const AuthResponseSchema = z.object({
   token: z.string(),
+  refreshToken: z.string(),
   user: UserSchema,
 })
 export type AuthResponse = z.infer<typeof AuthResponseSchema>
+
+export const RefreshDtoSchema = z.object({
+  refreshToken: z.string().min(1, 'Required'),
+})
+export type RefreshDto = z.infer<typeof RefreshDtoSchema>
+
+export const LogoutDtoSchema = z.object({
+  refreshToken: z.string().min(1, 'Required'),
+})
+export type LogoutDto = z.infer<typeof LogoutDtoSchema>

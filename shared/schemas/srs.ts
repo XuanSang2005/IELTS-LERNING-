@@ -123,6 +123,28 @@ export type TodayQueue = z.infer<typeof TodayQueueSchema>
  * Per-box accuracy = totalCorrect / totalReviews across cards currently in
  * each box, plus card counts for queue health.
  */
+/**
+ * Compact "From yesterday" review band for the dashboard. Pulled from SRS
+ * cards whose `introducedAt` falls in the user's previous local day.
+ *
+ * `hasAnyHistory` lets the frontend hide the band on Day 1 (when the user
+ * has never introduced any item) without conflating it with "yesterday was
+ * a rest day" (had history but introduced nothing yesterday).
+ */
+export const YesterdayReviewItemSchema = z.object({
+  itemId: z.string(),
+  discipline: LexiconDisciplineSchema,
+  text: z.string(),
+  meta: z.string(),
+})
+export type YesterdayReviewItem = z.infer<typeof YesterdayReviewItemSchema>
+
+export const YesterdayReviewSchema = z.object({
+  items: z.array(YesterdayReviewItemSchema),
+  hasAnyHistory: z.boolean(),
+})
+export type YesterdayReview = z.infer<typeof YesterdayReviewSchema>
+
 export const RetentionMetricsSchema = z.object({
   discipline: LexiconDisciplineSchema,
   perBox: z.array(

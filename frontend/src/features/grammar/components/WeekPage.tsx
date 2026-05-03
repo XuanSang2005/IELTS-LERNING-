@@ -5,7 +5,7 @@ import { GRAMMAR_LEVELS, GRAMMAR_PHASES } from '@shared/schemas/grammar-plan'
 import { Polaroid } from '@/components/ui/Polaroid'
 import { getStub } from '@/features/grammar/data/week-stubs'
 import { useWeekLesson, useLessonById } from '@/features/grammar/hooks/grammar-queries'
-import { useGrammarLevel } from '@/stores/grammar-level-store'
+import { useUserBandLevel } from '@/features/practice/hooks/practice-queries'
 import { useGrammarProgress } from '@/stores/grammar-progress-store'
 import { LessonReader } from './LessonReader'
 import { PracticeSession } from './PracticeSession'
@@ -37,7 +37,7 @@ function toRoman(n: number): string {
 }
 
 export function WeekPage({ week, initialTab = 'lesson' }: WeekPageProps) {
-  const level = useGrammarLevel((s) => s.level)
+  const level = useUserBandLevel()
   const stub = getStub(level, week)
   const phase = GRAMMAR_PHASES.find((p) => p.phase === stub.phase)!
   const levelMeta = GRAMMAR_LEVELS.find((l) => l.level === level)!
